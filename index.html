@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Jeffston Court Apartments - Book Your Luxury Stay</title>
+    <meta name="description" content="Book your luxury stay at Jeffston Court Apartments. Modern amenities, secure booking with Paystack, and instant confirmation. Best rates guaranteed." />
+    <meta name="keywords" content="apartment booking, Jeffston Court, luxury accommodation, Accra apartments, rent in Accra" />
+    <meta name="author" content="Jeffston Court" />
+    <link rel="canonical" href="https://your-domain.com/index.html" />
+
+    <meta property="og:title" content="Jeffston Court Apartments - Luxury Stay Booking" />
+    <meta property="og:description" content="Modern amenities, secure booking, and instant confirmation in the heart of Accra." />
+    <meta property="og:image" content="https://your-domain.com/assets/og-image.jpg" />
+    <meta property="og:url" content="https://your-domain.com/index.html" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Jeffston Court Apartments - Luxury Stay Booking" />
+    <meta name="twitter:description" content="Modern amenities, secure booking, and instant confirmation." />
+    <meta name="twitter:image" content="https://your-domain.com/assets/twitter-image.jpg" />
+
+    <meta name="theme-color" content="#16A34A" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json" />
+
+    <link rel="preconnect" href="https://script.google.com" crossorigin />
+    <link rel="preconnect" href="https://js.paystack.co" crossorigin />
+    <link rel="preload" href="styles.css" as="style" />
+    <link rel="preload" href="app.js" as="script" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="nav-header" role="banner">
+        <nav class="nav-container" aria-label="Main navigation">
+            <a href="listings.html" class="nav-brand" aria-label="Jeffston Court Home">
+                <img src="Assets/photo_6_2025-07-25_06-12-23.jpg" alt="Jeffston Furnished Apartments Logo" width="56" height="56" style="border-radius:50%;object-fit:cover;">
+            </a>
+            <div class="nav-links" role="navigation">
+                <a href="listings.html">View Listings</a>
+                <a href="index.html" class="active" aria-current="page">Book Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero-banner" aria-label="Luxury Living Banner">
+        <h1 class="hero-title">Luxury Living in Accra</h1>
+        <div class="hero-underline"></div>
+    </section>
+
+    <main id="main-content" class="booking-page-wrapper" role="main">
+        <section class="form-container" aria-labelledby="page-title">
+            <h2 id="page-title">Book Your Stay</h2>
+            <p id="form-desc">Complete the form below to reserve your apartment.</p>
+
+            <form id="booking-form" aria-label="Apartment Booking Form" autocomplete="on">
+                <fieldset>
+                    <legend>Guest Information</legend>
+                    <div class="form-row">
+                        <div>
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" autocomplete="name" required>
+                        </div>
+                        <div>
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+                    </div>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Booking Details</legend>
+                    <div class="form-row">
+                        <div>
+                            <label for="apartmentType">Apartment Type</label>
+                            <select id="apartmentType" name="apartmentType" required>
+                                <option value="">Select Apartment</option>
+                                <!-- Dynamically populated from Google Apps Script via app.js -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="checkIn">Check-in Date</label>
+                            <input type="date" id="checkIn" name="checkIn" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="checkOut">Check-out Date</label>
+                            <input type="date" id="checkOut" name="checkOut" required>
+                        </div>
+                        <div>
+                            <label for="guests">Number of Guests</label>
+                            <input type="number" id="guests" name="guests" min="1" max="10" required>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <button type="submit" id="submit-booking" class="btn-primary">Confirm Booking &amp; Pay</button>
+            </form>
+        </section>
+
+        <aside class="booking-summary" role="complementary" aria-label="Booking summary">
+            <button class="summary-toggle" aria-expanded="false" aria-controls="summary-content">
+                <span>View Booking Summary</span>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
+            </button>
+            <div id="summary-content" class="summary-content">
+                <p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>
+            </div>
+        </aside>
+    </main>
+
+    <div style="overflow:hidden;max-width:100%;width:500px;height:500px;margin:2rem auto;">
+        <div id="g-mapdisplay" style="height:100%; width:100%;max-width:100%;">
+            <iframe style="height:100%;width:100%;border:0;" frameborder="0"
+                src="https://www.google.com/maps/embed/v1/place?q=Jeffston+Furnished+Apartments+Accra,+Nii+Darko+Street,+Accra,+Ghana&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe>
+        </div>
+        <a class="embed-map-html" href="https://kbj9qpmy.com/bp" id="grab-map-authorization">Internet Provider</a>
+    </div>
+
+    <footer class="site-footer" role="contentinfo">
+        <p>&copy; 2025 Jeffston Court Apartments. All Rights Reserved.</p>
+    </footer>
+
+    <div id="spinner-overlay" class="hidden" aria-live="polite"><div class="spinner"></div></div>
+
+    <a href="https://wa.me/233201349321?text=Hello!%20I'm%20interested%20in%20an%20apartment." 
+       class="whatsapp-fab" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       aria-label="Chat with us on WhatsApp"
+       title="Chat with us on WhatsApp">
+        <span class="whatsapp-fab-bg">
+          <svg viewBox="0 0 32 32" fill="currentColor" height="32" width="32" aria-hidden="true">
+            <circle cx="16" cy="16" r="16" fill="#25D366" stroke="#fff" stroke-width="2"/>
+            <path d="M19.11 17.205c-.372 0-1.088 1.39-1.088 1.39s-.239-.72.481-1.541c.72-1.251 1.443-2.817 2.165-4.068.722-1.25 1.443-2.315 1.443-2.315s-1.635 1.251-2.677 2.502c-1.042 1.251-2.458 3.127-3.379 4.379-.921 1.251-1.614 2.135-1.614 2.135s-.41.401-.41.981c0 .58.41.981.41.981s.481.481 1.042.481h.139c.561 0 1.541-.72 2.315-1.614.774-.894 1.443-1.875 1.443-1.875s.651-.894.239-1.443c-.412-.55-.894-.481-1.155-.481z M15.311 20.215h-3.443v-5.043h3.443v5.043z M17.432 10.133c0-.774-.481-1.39-1.042-1.39-.561 0-1.042.616-1.042 1.39 0 .774.481 1.39 1.042 1.39.561 0 1.042-.616 1.042-1.39z M12.872 21.658c-1.251 0-2.315-.894-2.315-2.135 0-1.24.931-2.315 2.135-2.315 1.24 0 2.315.931 2.315 2.135 0 1.251-1.042 2.315-2.135 2.315z M22.049 1.416c-5.802 0-10.523 4.72-10.523 10.523 0 1.541.33 3.01.931 4.379l-1.042 3.556 3.66-1.042c1.37.561 2.83.894 4.379.894 5.802 0 10.523-4.72 10.523-10.523S27.851 1.416 22.049 1.416z"/>
+          </svg>
+        </span>
+    </a>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LodgingBusiness",
+      "name": "Jeffston Court Apartments",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Adenta Main St",
+        "addressLocality": "Accra",
+        "addressCountry": "GH"
+      },
+      "telephone": "+233201349321",
+      "priceRange": "GHS 4200 - GHS 6840"
+    }
+    </script>
+    
+    <noscript>
+        <p style="text-align: center; padding: 2rem;">This page requires JavaScript to function properly. Please enable JavaScript in your browser.</p>
+    </noscript>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="app.js" defer></script>
+</body>
+</html>

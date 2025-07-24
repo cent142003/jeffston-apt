@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Jeffston Court Apartments - View Our Listings</title>
+    <meta name="description" content="Browse our collection of luxury apartments in Accra. Find your perfect stay with modern amenities and book securely online." />
+    <meta name="keywords" content="apartment listings, Jeffston Court, accommodation Accra, apartment rentals" />
+    <meta name="author" content="Jeffston Court" />
+    <link rel="canonical" href="https://your-domain.com/listings.html" />
+
+    <meta property="og:title" content="Jeffston Court Apartments - Our Listings" />
+    <meta property="og:description" content="Browse our collection of luxury apartments in Accra. Find your perfect stay with modern amenities." />
+    <meta property="og:image" content="https://your-domain.com/assets/og-image-listings.jpg" />
+    <meta property="og:url" content="https://your-domain.com/listings.html" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Jeffston Court Apartments - Our Listings" />
+    <meta name="twitter:description" content="Browse our collection of luxury apartments in Accra." />
+    <meta name="twitter:image" content="https://your-domain.com/assets/twitter-image-listings.jpg" />
+
+    <meta name="theme-color" content="#16A34A" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json" />
+
+    <link rel="preconnect" href="https://script.google.com" crossorigin />
+    <link rel="preconnect" href="https://maps.googleapis.com" crossorigin />
+    <link rel="preload" href="styles.css" as="style" />
+    <link rel="preload" href="app.js" as="script" />
+
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="nav-header" role="banner">
+        <nav class="nav-container" aria-label="Main navigation">
+            <a href="listings.html" class="nav-brand" aria-label="Jeffston Court Home">
+                <img src="Assets/photo_6_2025-07-25_06-12-23.jpg" alt="Jeffston Furnished Apartments Logo" width="56" height="56" style="border-radius:50%;object-fit:cover;">
+            </a>
+            <div class="nav-links" role="navigation">
+                <a href="listings.html" class="active" aria-current="page">View Listings</a>
+                <a href="index.html">Book Now</a>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" class="container" role="main" style="background:var(--background-card);border-radius:var(--border-radius-lg);box-shadow:var(--box-shadow);padding:2.5rem;margin-top:2rem;">
+        <div class="header-content" style="margin-bottom:2rem;">
+            <h1 style="margin-bottom:0.5rem;">Our Apartments</h1>
+            <p style="margin-bottom:2rem;">Find your next home at Jeffston Court. All prices are per month.</p>
+        </div>
+
+        <section class="filters" aria-labelledby="filter-heading" style="margin-bottom:2rem;">
+            <h2 id="filter-heading" class="visually-hidden">Filter Apartments</h2>
+            <form id="filter-form" class="filter-controls" style="justify-content:center;">
+                <div class="filter-group">
+                    <label for="filter-price">Price Range</label>
+                    <select id="filter-price" name="price-range">
+                        <option value="">All Prices</option>
+                        <option value="0-5000">Up to GHS 5000</option>
+                        <option value="5001-8000">GHS 5001 - 8000</option>
+                        <option value="8001">GHS 8001+</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-bedrooms">Bedrooms</label>
+                    <select id="filter-bedrooms" name="bedrooms">
+                        <option value="">Any</option>
+                        <option value="1">1 Bedroom</option>
+                        <option value="2">2+ Bedrooms</option>
+                        <option value="3">3+ Bedrooms</option>
+                    </select>
+                </div>
+            </form>
+        </section>
+
+        <div id="listings-container" class="listings-grid" role="region" aria-live="polite" aria-atomic="true" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;justify-items:center;">
+            <article class="apartment-card">
+  <div class="apartment-image">
+    <img src="Assets/photo_3_2025-07-25_06-12-23.jpg" alt="Luxury 2 Bedroom Apartment - Living Room" width="320" height="200">
+  </div>
+  <!-- ...details... -->
+</article>
+<article class="apartment-card">
+  <div class="apartment-image">
+    <img src="Assets/photo_4_2025-07-25_06-12-23.jpg" alt="Executive 1 Bedroom Suite - Bedroom" width="320" height="200">
+  </div>
+  <!-- ...details... -->
+</article>
+<article class="apartment-card">
+  <div class="apartment-image">
+    <img src="Assets/photo_5_2025-07-25_06-12-23.jpg" alt="Modern Kitchen in Jeffston Furnished Apartments" width="320" height="200">
+  </div>
+  <!-- ...details... -->
+</article>
+<!-- Continue for other apartments, using photo_6, photo_7, etc. -->
+        </div>
+
+        <div class="pagination" role="navigation" aria-label="Pagination" style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
+            <button id="prev-page" class="btn-secondary" disabled>Previous</button>
+            <span id="page-info" aria-live="polite" style="margin:0 1rem;">Page 1 of 1</span>
+            <button id="next-page" class="btn-secondary" disabled>Next</button>
+        </div>
+    </main>
+
+    <div style="overflow:hidden;max-width:100%;width:500px;height:500px;margin:2rem auto;">
+  <div id="g-mapdisplay" style="height:100%; width:100%;max-width:100%;">
+    <iframe style="height:100%;width:100%;border:0;" frameborder="0"
+      src="https://www.google.com/maps/embed/v1/place?q=Jeffston+Furnished+Apartments+Accra,+Nii+Darko+Street,+Accra,+Ghana&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe>
+  </div>
+  <a class="embed-map-html" href="https://kbj9qpmy.com/bp" id="grab-map-authorization">Internet Provider</a>
+  <style>
+    #g-mapdisplay .text-marker{}
+    .map-generator{max-width: 100%; max-height: 100%; background: none;}
+  </style>
+</div>
+
+    <footer class="site-footer" role="contentinfo">
+        <p>&copy; 2025 Jeffston Court Apartments. All Rights Reserved.</p>
+    </footer>
+
+    <div id="spinner-overlay" class="hidden"><div class="spinner"></div></div>
+
+    <a href="#" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Chat with us on WhatsApp">
+        <svg viewBox="0 0 32 32" fill="currentColor" height="24" width="24"><path d=" M19.11 17.205c-.372 0-1.088 1.39-1.088 1.39s-.239-.72.481-1.541c.72-1.251 1.443-2.817 2.165-4.068.722-1.25 1.443-2.315 1.443-2.315s-1.635 1.251-2.677 2.502c-1.042 1.251-2.458 3.127-3.379 4.379-.921 1.251-1.614 2.135-1.614 2.135s-.41.401-.41.981c0 .58.41.981.41.981s.481.481 1.042.481h.139c.561 0 1.541-.72 2.315-1.614.774-.894 1.443-1.875 1.443-1.875s.651-.894.239-1.443c-.412-.55-.894-.481-1.155-.481z M15.311 20.215h-3.443v-5.043h3.443v5.043z M17.432 10.133c0-.774-.481-1.39-1.042-1.39-.561 0-1.042.616-1.042 1.39 0 .774.481 1.39 1.042 1.39.561 0 1.042-.616 1.042-1.39z M12.872 21.658c-1.251 0-2.315-.894-2.315-2.135 0-1.24.931-2.315 2.135-2.315 1.24 0 2.315.931 2.315 2.135 0 1.251-1.042 2.315-2.135 2.315z M22.049 1.416c-5.802 0-10.523 4.72-10.523 10.523 0 1.541.33 3.01.931 4.379l-1.042 3.556 3.66-1.042c1.37.561 2.83.894 4.379.894 5.802 0 10.523-4.72 10.523-10.523S27.851 1.416 22.049 1.416z"/></svg>
+    </a>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Apartment Listings",
+      "description": "Available luxury apartments for rent at Jeffston Court in Accra.",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "item": {
+            "@type": "LodgingBusiness",
+            "name": "2-Bedroom Luxury Apartment",
+            "url": "https://your-domain.com/index.html?apt_id=APT001"
+          }
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "item": {
+            "@type": "LodgingBusiness",
+            "name": "3-Bedroom Premium Apartment",
+            "url": "https://your-domain.com/index.html?apt_id=APT002"
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <noscript>
+        <p style="text-align: center; padding: 2rem;">This page requires JavaScript to function properly. Please enable JavaScript in your browser.</p>
+    </noscript>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" defer></script>
+    <script src="app.js" defer></script>
+</body>
+</html>
