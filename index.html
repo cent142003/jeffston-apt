@@ -3,173 +3,450 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Jeffston Court Apartments - Book Your Luxury Stay</title>
-    <meta name="description" content="Book your luxury stay at Jeffston Court Apartments. Modern amenities, secure booking with Paystack, and instant confirmation. Best rates guaranteed." />
-    <meta name="keywords" content="apartment booking, Jeffston Court, luxury accommodation, Accra apartments, rent in Accra" />
-    <meta name="author" content="Jeffston Court" />
+    <title>Jeffston Court Apartments - Book Your Luxury Stay | Premium Accommodation in Accra</title>
+    <meta name="description" content="Book your luxury stay at Jeffston Court Apartments. Modern amenities, secure booking with Paystack, instant confirmation, and 24/7 security. Best rates guaranteed in Accra." />
+    <meta name="keywords" content="apartment booking, Jeffston Court, luxury accommodation, Accra apartments, rent in Accra, furnished apartments, premium stay, Ghana accommodation" />
+    <meta name="author" content="Jeffston Court Apartments" />
+    <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://your-domain.com/index.html" />
 
-    <meta property="og:title" content="Jeffston Court Apartments - Luxury Stay Booking" />
-    <meta property="og:description" content="Modern amenities, secure booking, and instant confirmation in the heart of Accra." />
-    <meta property="og:image" content="https://your-domain.com/assets/og-image.jpg" />
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Jeffston Court Apartments - Premium Luxury Stay Booking" />
+    <meta property="og:description" content="Modern amenities, secure booking, and instant confirmation in the heart of Accra. Book your premium apartment today." />
+    <meta property="og:image" content="https://your-domain.com/Assets/photo_1_2025-07-25_06-12-23.jpg" />
     <meta property="og:url" content="https://your-domain.com/index.html" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Jeffston Court Apartments" />
+    
+    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Jeffston Court Apartments - Luxury Stay Booking" />
-    <meta name="twitter:description" content="Modern amenities, secure booking, and instant confirmation." />
-    <meta name="twitter:image" content="https://your-domain.com/assets/twitter-image.jpg" />
+    <meta name="twitter:description" content="Modern amenities, secure booking, and instant confirmation in Accra." />
+    <meta name="twitter:image" content="https://your-domain.com/Assets/photo_1_2025-07-25_06-12-23.jpg" />
 
+    <!-- PWA and Icons -->
     <meta name="theme-color" content="#16A34A" />
-    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <meta name="msapplication-TileColor" content="#16A34A" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/Assets/photo_6_2025-07-25_06-12-23.jpg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/Assets/photo_6_2025-07-25_06-12-23.jpg">
+    <link rel="icon" type="image/png" sizes="16x16" href="/Assets/photo_6_2025-07-25_06-12-23.jpg">
     <link rel="manifest" href="/manifest.json" />
 
+    <!-- Performance Optimization -->
     <link rel="preconnect" href="https://script.google.com" crossorigin />
     <link rel="preconnect" href="https://js.paystack.co" crossorigin />
     <link rel="dns-prefetch" href="https://api.paystack.co" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="preload" href="styles.css" as="style" />
     <link rel="preload" href="app.js" as="script" />
     <link rel="preload" href="Assets/photo_6_2025-07-25_06-12-23.jpg" as="image" />
+    <link rel="preload" href="Assets/photo_1_2025-07-25_06-12-23.jpg" as="image" />
 
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Google Fonts for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Skip Navigation Link for Accessibility -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
+    <!-- Header Section -->
     <header class="nav-header" role="banner">
         <nav class="nav-container" aria-label="Main navigation">
             <a href="listings.html" class="nav-brand" aria-label="Jeffston Court Home">
                 <img src="Assets/photo_6_2025-07-25_06-12-23.jpg" alt="Jeffston Furnished Apartments Logo" width="56" height="56" style="border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <span class="brand-text">Jeffston Court</span>
             </a>
             <div class="nav-links" role="navigation">
-                <a href="listings.html">View Listings</a>
-                <a href="index.html" class="active" aria-current="page">Book Now</a>
+                <a href="listings.html" class="nav-link">
+                    <span class="nav-icon">🏠</span>
+                    View Listings
+                </a>
+                <a href="index.html" class="nav-link active" aria-current="page">
+                    <span class="nav-icon">📋</span>
+                    Book Now
+                </a>
             </div>
         </nav>
     </header>
 
-    <section class="hero-banner" aria-label="Luxury Living Banner">
-        <h1 class="hero-title">Luxury Living in Accra</h1>
-        <div class="hero-underline"></div>
+    <!-- Hero Banner Section -->
+    <section class="hero-banner" aria-label="Luxury Living Banner" style="position: relative; background: linear-gradient(135deg, rgba(22, 163, 74, 0.9), rgba(21, 128, 61, 0.9)), url('Assets/photo_1_2025-07-25_06-12-23.jpg'); background-size: cover; background-position: center; min-height: 300px; display: flex; align-items: center; justify-content: center; text-align: center; color: white;">
+        <div class="hero-content">
+            <h1 class="hero-title animate__animated animate__fadeInUp">Luxury Living in Accra</h1>
+            <div class="hero-underline"></div>
+            <p class="hero-subtitle animate__animated animate__fadeInUp animate__delay-1s" style="font-size: 1.2rem; margin-top: 1rem; max-width: 600px;">Experience premium apartment living with modern amenities, 24/7 security, and unbeatable location in the heart of Accra.</p>
+            <div class="hero-features animate__animated animate__fadeInUp animate__delay-2s" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 2rem;">
+                <div class="feature-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">🔒</span>
+                    <span>24/7 Security</span>
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">🚗</span>
+                    <span>Free Parking</span>
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">📶</span>
+                    <span>High-Speed WiFi</span>
+                </div>
+                <div class="feature-item" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">💳</span>
+                    <span>Secure Payment</span>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <main id="main-content" class="booking-page-wrapper" role="main">
-        <section class="form-container" aria-labelledby="page-title">
-            <h2 id="page-title">Book Your Stay</h2>
-            <p id="form-desc">Complete the form below to reserve your apartment.</p>
+    <!-- Trust Indicators -->
+    <section class="trust-section" style="background: #f8fafc; padding: 2rem 0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+            <div class="trust-indicators" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center;">
+                <div class="trust-item">
+                    <div style="background: #16a34a; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem;">✓</div>
+                    <h3 style="margin: 0 0 0.5rem; color: #1e293b;">Instant Confirmation</h3>
+                    <p style="margin: 0; color: #64748b;">Get immediate booking confirmation via email and SMS</p>
+                </div>
+                <div class="trust-item">
+                    <div style="background: #16a34a; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem;">🛡️</div>
+                    <h3 style="margin: 0 0 0.5rem; color: #1e293b;">Secure Payments</h3>
+                    <p style="margin: 0; color: #64748b;">Protected by Paystack with 256-bit SSL encryption</p>
+                </div>
+                <div class="trust-item">
+                    <div style="background: #16a34a; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem;">⭐</div>
+                    <h3 style="margin: 0 0 0.5rem; color: #1e293b;">Best Rate Guarantee</h3>
+                    <p style="margin: 0; color: #64748b;">Competitive pricing with no hidden fees</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Booking Content -->
+    <main id="main-content" class="booking-page-wrapper" role="main" style="display: grid; grid-template-columns: 1fr 400px; gap: 3rem; max-width: 1400px; margin: 3rem auto; padding: 0 1rem;">
+        <!-- Booking Form Section -->
+        <section class="form-container" aria-labelledby="page-title" style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 2.5rem;">
+            <div class="form-header" style="text-align: center; margin-bottom: 2rem;">
+                <h2 id="page-title" style="margin: 0 0 0.5rem; color: #1e293b; font-size: 2rem; font-weight: 600;">Book Your Stay</h2>
+                <p id="form-desc" style="margin: 0; color: #64748b; font-size: 1.1rem;">Complete the form below to reserve your apartment. Safe, secure, and instant.</p>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-indicator" style="display: flex; justify-content: center; margin-bottom: 2rem;">
+                <div class="progress-step active" style="display: flex; align-items: center; color: #16a34a;">
+                    <div style="background: #16a34a; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 0.5rem;">1</div>
+                    <span>Details</span>
+                </div>
+                <div style="width: 50px; height: 2px; background: #e2e8f0; margin: 15px 1rem;"></div>
+                <div class="progress-step" style="display: flex; align-items: center; color: #94a3b8;">
+                    <div style="background: #e2e8f0; color: #64748b; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 0.5rem;">2</div>
+                    <span>Payment</span>
+                </div>
+            </div>
 
             <form id="booking-form" aria-label="Apartment Booking Form" autocomplete="on">
-                <fieldset>
-                    <legend>Guest Information</legend>
-                    <div class="form-row">
+                <!-- Guest Information Fieldset -->
+                <fieldset style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <legend style="padding: 0 0.5rem; font-weight: 600; color: #374151;">👤 Guest Information</legend>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div>
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" autocomplete="name" required>
+                            <label for="name" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Full Name *</label>
+                            <input type="text" id="name" name="name" autocomplete="name" required 
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s;"
+                                   placeholder="Enter your full name">
                         </div>
                         <div>
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" autocomplete="email" required>
+                            <label for="email" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Email Address *</label>
+                            <input type="email" id="email" name="email" autocomplete="email" required 
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s;"
+                                   placeholder="your.email@example.com">
                         </div>
                     </div>
                     <div>
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" autocomplete="tel" required>
+                        <label for="phone" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" autocomplete="tel" required 
+                               style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem; transition: border-color 0.2s;"
+                               placeholder="+233 xxx xxx xxx">
                     </div>
                 </fieldset>
 
-                <fieldset>
-                    <legend>Booking Details</legend>
-                    <div class="form-row">
+                <!-- Booking Details Fieldset -->
+                <fieldset style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <legend style="padding: 0 0.5rem; font-weight: 600; color: #374151;">🏠 Booking Details</legend>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                         <div>
-                            <label for="apartmentType">Apartment Type</label>
-                            <select id="apartmentType" name="apartmentType" required>
+                            <label for="apartmentType" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Apartment Type *</label>
+                            <select id="apartmentType" name="apartmentType" required 
+                                    style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem; background: white;">
                                 <option value="">Select Apartment</option>
                                 <!-- Dynamically populated from Google Apps Script via app.js -->
                             </select>
                         </div>
                         <div>
-                            <label for="checkIn">Check-in Date</label>
-                            <input type="date" id="checkIn" name="checkIn" required>
+                            <label for="checkIn" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Check-in Date *</label>
+                            <input type="date" id="checkIn" name="checkIn" required 
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
                         </div>
                     </div>
-                    <div class="form-row">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div>
-                            <label for="checkOut">Check-out Date</label>
-                            <input type="date" id="checkOut" name="checkOut" required>
+                            <label for="checkOut" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Check-out Date *</label>
+                            <input type="date" id="checkOut" name="checkOut" required 
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;">
                         </div>
                         <div>
-                            <label for="guests">Number of Guests</label>
-                            <input type="number" id="guests" name="guests" min="1" max="10" required>
+                            <label for="guests" style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Number of Guests *</label>
+                            <input type="number" id="guests" name="guests" min="1" max="10" required 
+                                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1rem;"
+                                   placeholder="1">
                         </div>
                     </div>
                 </fieldset>
 
-                <button type="submit" id="submit-booking" class="btn-primary">Confirm Booking &amp; Pay</button>
+                <!-- Submit Button -->
+                <button type="submit" id="submit-booking" class="btn-primary" 
+                        style="width: 100%; padding: 1rem 2rem; background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <span style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span>🔒</span>
+                        Confirm Booking &amp; Pay Securely
+                    </span>
+                </button>
             </form>
         </section>
 
-        <aside class="booking-summary" role="complementary" aria-label="Booking summary">
-            <button class="summary-toggle" aria-expanded="false" aria-controls="summary-content">
-                <span>View Booking Summary</span>
-                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"/></svg>
-            </button>
+        <!-- Booking Summary Sidebar -->
+        <aside class="booking-summary" role="complementary" aria-label="Booking summary" 
+               style="background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 2rem; height: fit-content; position: sticky; top: 2rem;">
+            <h3 style="margin: 0 0 1.5rem; color: #1e293b; font-size: 1.5rem; font-weight: 600; text-align: center;">📋 Booking Summary</h3>
+            
             <div id="summary-content" class="summary-content">
-                <p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>
+                <div class="summary-placeholder" style="text-align: center; color: #64748b; padding: 2rem; border: 2px dashed #e2e8f0; border-radius: 8px;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏠</div>
+                    <p style="margin: 0;">Select an apartment and dates to see your booking summary and pricing details.</p>
+                </div>
+            </div>
+
+            <!-- Security Badge -->
+            <div style="margin-top: 2rem; padding: 1rem; background: #f0f9f5; border: 1px solid #bbf7d0; border-radius: 8px; text-align: center;">
+                <div style="color: #16a34a; font-size: 1.5rem; margin-bottom: 0.5rem;">🛡️</div>
+                <p style="margin: 0; font-size: 0.9rem; color: #166534; font-weight: 500;">Secured by Paystack</p>
+                <p style="margin: 0; font-size: 0.8rem; color: #15803d;">256-bit SSL encryption</p>
             </div>
         </aside>
     </main>
 
-    <div style="overflow:hidden;max-width:100%;width:500px;height:500px;margin:2rem auto;">
-        <div id="g-mapdisplay" style="height:100%; width:100%;max-width:100%;">
-            <iframe style="height:100%;width:100%;border:0;" frameborder="0"
-                src="https://www.google.com/maps/embed/v1/place?q=Jeffston+Furnished+Apartments+Accra,+Nii+Darko+Street,+Accra,+Ghana&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"></iframe>
+    <!-- Features Section -->
+    <section class="features-section" style="background: #f8fafc; padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+            <h2 style="text-align: center; margin: 0 0 3rem; color: #1e293b; font-size: 2.5rem; font-weight: 600;">Why Choose Jeffston Court?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+                    <h3 style="margin: 0 0 1rem; color: #1e293b;">Prime Location</h3>
+                    <p style="margin: 0; color: #64748b;">Located in the heart of Accra with easy access to business districts, shopping centers, and entertainment hubs.</p>
+                </div>
+                <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+                    <h3 style="margin: 0 0 1rem; color: #1e293b;">Modern Amenities</h3>
+                    <p style="margin: 0; color: #64748b;">Fully furnished apartments with air conditioning, modern kitchen appliances, and high-speed internet.</p>
+                </div>
+                <div class="feature-card" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                    <h3 style="margin: 0 0 1rem; color: #1e293b;">Professional Service</h3>
+                    <p style="margin: 0; color: #64748b;">24/7 customer support, professional maintenance, and dedicated property management team.</p>
+                </div>
+            </div>
         </div>
-        <a class="embed-map-html" href="https://kbj9qpmy.com/bp" id="grab-map-authorization">Internet Provider</a>
-    </div>
+    </section>
 
-    <footer class="site-footer" role="contentinfo">
-        <p>&copy; 2025 Jeffston Court Apartments. All Rights Reserved.</p>
+    <!-- Location Section -->
+    <section class="location-section" style="padding: 4rem 0;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+            <h2 style="text-align: center; margin: 0 0 2rem; color: #1e293b; font-size: 2.5rem; font-weight: 600;">📍 Our Location</h2>
+            <p style="text-align: center; margin: 0 0 3rem; color: #64748b; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">Conveniently located in Accra with easy access to major landmarks, business centers, and transportation hubs.</p>
+            
+            <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); max-width: 800px; margin: 0 auto;">
+                <div id="g-mapdisplay" style="height: 400px; width: 100%;">
+                    <iframe style="height:100%;width:100%;border:0;" frameborder="0"
+                        src="https://www.google.com/maps/embed/v1/place?q=Jeffston+Furnished+Apartments+Accra,+Nii+Darko+Street,+Accra,+Ghana&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
+                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                        aria-label="Map showing Jeffston Court Apartments location"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer" role="contentinfo" style="background: #1e293b; color: white; padding: 3rem 0 2rem;">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <div>
+                    <h3 style="margin: 0 0 1rem; color: white; font-size: 1.25rem;">Jeffston Court Apartments</h3>
+                    <p style="margin: 0 0 1rem; color: #cbd5e1;">Premium furnished apartments in the heart of Accra.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="https://wa.me/233201349321" style="color: #16a34a; text-decoration: none;">WhatsApp</a>
+                        <a href="tel:+233201349321" style="color: #16a34a; text-decoration: none;">Call Us</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 1rem; color: white;">Quick Links</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 0.5rem;"><a href="listings.html" style="color: #cbd5e1; text-decoration: none;">View Apartments</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="index.html" style="color: #cbd5e1; text-decoration: none;">Book Now</a></li>
+                        <li style="margin-bottom: 0.5rem;"><a href="#" style="color: #cbd5e1; text-decoration: none;">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="margin: 0 0 1rem; color: white;">Contact Info</h4>
+                    <div style="color: #cbd5e1;">
+                        <p style="margin: 0 0 0.5rem;">📞 +233 20 134 9321</p>
+                        <p style="margin: 0 0 0.5rem;">📧 info@jeffstoncourt.com</p>
+                        <p style="margin: 0;">📍 Accra, Ghana</p>
+                    </div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #374151; padding-top: 2rem; text-align: center;">
+                <p style="margin: 0; color: #94a3b8;">&copy; 2025 Jeffston Court Apartments. All Rights Reserved. | Secure booking powered by Paystack</p>
+            </div>
+        </div>
     </footer>
 
-    <div id="spinner-overlay" class="hidden" aria-live="polite"><div class="spinner"></div></div>
+    <!-- Loading Overlay -->
+    <div id="spinner-overlay" class="hidden" aria-live="polite" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="spinner" style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #16a34a; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
 
-    <a href="https://wa.me/233201349321?text=Hello!%20I'm%20interested%20in%20an%20apartment." 
+    <!-- WhatsApp FAB -->
+    <a href="https://wa.me/233201349321?text=Hello!%20I'm%20interested%20in%20booking%20an%20apartment%20at%20Jeffston%20Court." 
        class="whatsapp-fab" 
        target="_blank" 
        rel="noopener noreferrer" 
        aria-label="Chat with us on WhatsApp"
-       title="Chat with us on WhatsApp">
-        <span class="whatsapp-fab-bg">
-          <svg viewBox="0 0 32 32" fill="currentColor" height="32" width="32" aria-hidden="true">
-            <circle cx="16" cy="16" r="16" fill="#25D366" stroke="#fff" stroke-width="2"/>
-            <path d="M19.11 17.205c-.372 0-1.088 1.39-1.088 1.39s-.239-.72.481-1.541c.72-1.251 1.443-2.817 2.165-4.068.722-1.25 1.443-2.315 1.443-2.315s-1.635 1.251-2.677 2.502c-1.042 1.251-2.458 3.127-3.379 4.379-.921 1.251-1.614 2.135-1.614 2.135s-.41.401-.41.981c0 .58.41.981.41.981s.481.481 1.042.481h.139c.561 0 1.541-.72 2.315-1.614.774-.894 1.443-1.875 1.443-1.875s.651-.894.239-1.443c-.412-.55-.894-.481-1.155-.481z M15.311 20.215h-3.443v-5.043h3.443v5.043z M17.432 10.133c0-.774-.481-1.39-1.042-1.39-.561 0-1.042.616-1.042 1.39 0 .774.481 1.39 1.042 1.39.561 0 1.042-.616 1.042-1.39z M12.872 21.658c-1.251 0-2.315-.894-2.315-2.135 0-1.24.931-2.315 2.135-2.315 1.24 0 2.315.931 2.315 2.135 0 1.251-1.042 2.315-2.135 2.315z M22.049 1.416c-5.802 0-10.523 4.72-10.523 10.523 0 1.541.33 3.01.931 4.379l-1.042 3.556 3.66-1.042c1.37.561 2.83.894 4.379.894 5.802 0 10.523-4.72 10.523-10.523S27.851 1.416 22.049 1.416z"/>
-          </svg>
-        </span>
+       title="Chat with us on WhatsApp for instant support"
+       style="position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1000; transition: transform 0.2s; text-decoration: none;">
+        <svg viewBox="0 0 24 24" fill="white" width="32" height="32" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+        </svg>
     </a>
 
+    <!-- Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LodgingBusiness",
       "name": "Jeffston Court Apartments",
+      "description": "Premium furnished apartments in Accra with modern amenities, 24/7 security, and professional service.",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Adenta Main St",
+        "streetAddress": "Nii Darko Street",
         "addressLocality": "Accra",
         "addressCountry": "GH"
       },
       "telephone": "+233201349321",
-      "priceRange": "GHS 4200 - GHS 6840"
+      "url": "https://your-domain.com",
+      "image": "https://your-domain.com/Assets/photo_1_2025-07-25_06-12-23.jpg",
+      "priceRange": "GHS 4200 - GHS 6840",
+      "amenityFeature": [
+        "Free WiFi",
+        "Air Conditioning", 
+        "Parking",
+        "24/7 Security",
+        "Fully Furnished"
+      ],
+      "checkinTime": "14:00",
+      "checkoutTime": "11:00",
+      "paymentAccepted": ["Credit Card", "Debit Card", "Mobile Money"],
+      "currenciesAccepted": "GHS"
     }
     </script>
     
+    <!-- Accessibility & No JavaScript Fallback -->
     <noscript>
-        <p style="text-align: center; padding: 2rem;">This page requires JavaScript to function properly. Please enable JavaScript in your browser.</p>
+        <div style="text-align: center; padding: 2rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; margin: 2rem;">
+            <h2 style="color: #dc2626;">JavaScript Required</h2>
+            <p style="color: #7f1d1d;">This page requires JavaScript to function properly. Please enable JavaScript in your browser to book your apartment.</p>
+            <p style="margin-top: 1rem;">
+                <strong>Alternative:</strong> Call us directly at 
+                <a href="tel:+233201349321" style="color: #16a34a;">+233 20 134 9321</a> 
+                or message us on 
+                <a href="https://wa.me/233201349321" style="color: #16a34a;">WhatsApp</a>
+            </p>
+        </div>
     </noscript>
 
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <!-- Performance and Security Scripts -->
+    <script src="https://js.paystack.co/v1/inline.js" defer></script>
     <script src="app.js" defer></script>
+
+    <!-- Add custom styles for enhanced experience -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .whatsapp-fab:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-brand .brand-text {
+            margin-left: 0.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(22, 163, 74, 0.1);
+        }
+        
+        .nav-link.active {
+            background-color: #16a34a;
+            color: white;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #16a34a !important;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .booking-page-wrapper {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .hero-features {
+                flex-direction: column !important;
+                gap: 1rem !important;
+            }
+            
+            .trust-indicators {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
 </body>
 </html>
