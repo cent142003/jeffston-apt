@@ -280,6 +280,16 @@
           return { success: true, bookingId: bookingId };
         }
         
+        if (functionName === 'verifyPaystackTransaction') {
+          // Simulate successful payment verification for demo
+          console.log('Simulating payment verification for reference:', parameters);
+          return { 
+            success: true, 
+            message: 'Payment verified successfully (demo mode)',
+            reference: parameters 
+          };
+        }
+        
         throw new Error('Google Apps Script not available');
       }
     } catch (error) {
@@ -617,57 +627,101 @@
     triggerPaystack(bookingDetails) {
       console.log('Payment details:', bookingDetails);
       
+      // Ensure PaystackPop is loaded
+      if (typeof PaystackPop === 'undefined') {
+        notify('Payment system not loaded. Please refresh the page and try again.', 'error', 5000);
+        return;
+      }
+      
       const handler = PaystackPop.setup({
         key: config.paystackKey,
         email: bookingDetails.email,
         amount: Math.round(bookingDetails.amount * 100), // Convert to pesewas
         currency: 'GHS',
         reference: bookingDetails.bookingId, // Use the booking ID as payment reference
-        callback: async (response) => {
+        callback: function(response) {
           console.log('Payment response:', response);
           notify('Payment successful! Verifying...', 'info', 3000);
           
-          try {
-            // Call your Google Apps Script verifyPaystackTransaction function
-            const verificationResponse = await callGoogleFunction('verifyPaystackTransaction', response.reference);
-            
-            if (verificationResponse && verificationResponse.success) {
-              notify('🎉 Booking Confirmed! Check your email for details.', 'success', 6000);
-              $('#booking-form').reset();
-              $('.summary-content').innerHTML = '<p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>';
-              
-              // Reset button state
-              const submitBtn = $('#submit-booking');
-              if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Confirm Booking & Pay';
-              }
-            } else {
-              throw new Error(verificationResponse?.message || 'Payment verification failed');
-            }
-          } catch (error) {
-            console.error('Verification error:', error);
-            notify('Payment verification failed. Please contact support with reference: ' + response.reference, 'error', 8000);
-          }
+          // Handle payment verification asynchronously
+          App.handlePaymentVerification(response, bookingDetails);
         },
-        onClose: () => {
+        onClose: function() {
           notify('Payment window closed. You can try again.', 'warn', 4000);
           // Reset button state when payment is cancelled
           const submitBtn = $('#submit-booking');
           if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Confirm Booking & Pay';
+            submitBtn.textContent = 'Confirm Booking & Pay Securely';
           }
         }
       });
 
       handler.openIframe();
+    },
+
+    async handlePaymentVerification(response, bookingDetails) {
+      try {
+        // Call your Google Apps Script verifyPaystackTransaction function
+        const verificationResponse = await callGoogleFunction('verifyPaystackTransaction', response.reference);
+        
+        if (verificationResponse && verificationResponse.success) {
+          notify('🎉 Booking Confirmed! Check your email for details.', 'success', 6000);
+          
+          // Reset form
+          const form = $('#booking-form');
+          if (form) form.reset();
+          
+          // Reset summary
+          const summaryContent = document.querySelector('.summary-content');
+          if (summaryContent) {
+            summaryContent.innerHTML = '<div class="summary-placeholder" style="text-align: center; color: #64748b; padding: 2rem; border: 2px dashed #e2e8f0; border-radius: 8px;"><div style="font-size: 3rem; margin-bottom: 1rem;">🏠</div><p style="margin: 0;">Select an apartment and dates to see your booking summary and pricing details.</p></div>';
+          }
+          
+          // Reset button state
+          const submitBtn = $('#submit-booking');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Confirm Booking & Pay Securely';
+          }
+          
+          // Show success message with booking reference
+          setTimeout(() => {
+            notify(`Booking Reference: ${response.reference}. You will receive a confirmation email shortly.`, 'success', 8000);
+          }, 2000);
+          
+        } else {
+          throw new Error(verificationResponse?.message || 'Payment verification failed');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        notify('Payment verification failed. Please contact support with reference: ' + response.reference, 'error', 8000);
+        
+        // Reset button state on error
+        const submitBtn = $('#submit-booking');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Confirm Booking & Pay Securely';
+        }
+      }
     }
   };
+
+  // --- Check Paystack Loading ---
+  function checkPaystackLoaded() {
+    if (typeof PaystackPop === 'undefined') {
+      console.warn('Paystack not loaded yet, retrying...');
+      setTimeout(checkPaystackLoaded, 500);
+    } else {
+      console.log('Paystack loaded successfully');
+    }
+  }
 
   // --- Progressive Enhancement: DOMContentLoaded ---
   document.addEventListener('DOMContentLoaded', () => {
     App.init();
+    // Check if Paystack is loaded
+    setTimeout(checkPaystackLoaded, 1000);
   });
 })();
 
