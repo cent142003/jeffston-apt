@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Test - Jeffston Court</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        select, input { width: 100%; padding: 0.75rem; margin: 0.5rem 0; border: 1px solid #ddd; border-radius: 4px; }
+        .status { padding: 1rem; margin: 1rem 0; border-radius: 4px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .summary { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        button { background: #007bff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; margin: 0.5rem; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Booking System Test</h1>
+        
+        <div id="status" class="status info">
+            <strong>Testing apartment dropdown loading...</strong>
+        </div>
+
+        <form>
+            <label for="apartmentType">Select Apartment:</label>
+            <select id="apartmentType" name="apartmentType">
+                <option value="">-- Loading apartments... --</option>
+            </select>
+            
+            <label for="checkIn">Check-in Date:</label>
+            <input type="date" id="checkIn" name="checkIn">
+            
+            <label for="checkOut">Check-out Date:</label>
+            <input type="date" id="checkOut" name="checkOut">
+        </form>
+
+        <div class="summary-content">
+            <p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>
+        </div>
+
+        <button onclick="testAPI()">🔄 Test API Connection</button>
+        <button onclick="testMockData()">📋 Test Mock Data</button>
+        
+        <div id="logs" style="background: #f8f9fa; padding: 1rem; margin: 1rem 0; border-radius: 4px; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <script>
+        // Copy the relevant functions from app.js
+        const config = {
+            apiUrl: 'https://script.google.com/macros/s/AKfycbxfAKrIYIeeMTWfvLrvBZbYaKbNXDYcIyBhHYmj-oj5KWHvEE0zlz-6vhOGyr-08D9W/exec',
+            taxRate: 0.12
+        };
+
+        const $ = selector => document.querySelector(selector);
+        const formatCurrency = (amount) => new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS' }).format(amount);
+
+        function log(message) {
+            const logs = $('#logs');
+            logs.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            logs.scrollTop = logs.scrollHeight;
+            console.log(message);
+        }
+
+        function setStatus(message, type = 'info') {
+            const status = $('#status');
+            status.className = `status ${type}`;
+            status.innerHTML = `<strong>${message}</strong>`;
+        }
+
+        function getMockApartments() {
+            return [
+                { id: "APT001", type: "2-Bedroom Luxury Apartment", price: 4200 },
+                { id: "APT002", type: "3-Bedroom Premium Apartment", price: 6840 },
+                { id: "APT003", type: "Executive 1-Bedroom Suite", price: 3200 }
+            ];
+        }
+
+        async function testAPI() {
+            setStatus('Testing API connection...', 'info');
+            log('Testing API endpoint: ' + config.apiUrl + '?action=getApartments');
+            
+            try {
+                const response = await fetch(config.apiUrl + '?action=getApartments');
+                const text = await response.text();
+                
+                if (text.trim().startsWith('<!DOCTYPE html>')) {
+                    log('❌ API returned HTML instead of JSON');
+                    log('Response preview: ' + text.substring(0, 100) + '...');
+                    setStatus('API returns HTML - need to update Google Apps Script', 'error');
+                    return false;
+                } else {
+                    const data = JSON.parse(text);
+                    log('✅ API returned JSON: ' + JSON.stringify(data, null, 2));
+                    setStatus('API working correctly!', 'success');
+                    return data;
+                }
+            } catch (error) {
+                log('❌ API test failed: ' + error.message);
+                setStatus('API test failed: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function testMockData() {
+            setStatus('Testing mock data fallback...', 'info');
+            log('Loading mock apartment data');
+            
+            const mockData = getMockApartments();
+            log('Mock data: ' + JSON.stringify(mockData, null, 2));
+            
+            populateDropdown(mockData);
+            setStatus('Mock data loaded successfully!', 'success');
+            log('✅ Dropdown populated with ' + mockData.length + ' apartments');
+        }
+
+        function populateDropdown(apartments) {
+            const select = $('#apartmentType');
+            select.innerHTML = '<option value="">-- Select Apartment --</option>';
+            
+            apartments.forEach(apt => {
+                const option = document.createElement('option');
+                option.value = apt.id;
+                option.textContent = `${apt.type} - ${formatCurrency(apt.price)}`;
+                select.appendChild(option);
+            });
+        }
+
+        function updatePrice() {
+            const selectedId = $('#apartmentType')?.value;
+            const checkIn = new Date($('#checkIn')?.value);
+            const checkOut = new Date($('#checkOut')?.value);
+            const summaryContainer = $('.summary-content');
+            
+            if (!selectedId || !checkIn || !checkOut || checkIn >= checkOut) {
+                summaryContainer.innerHTML = '<p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>';
+                return;
+            }
+
+            const mockApartments = getMockApartments();
+            const apartment = mockApartments.find(apt => apt.id === selectedId);
+            
+            if (apartment) {
+                const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                const pricePerMonth = apartment.price;
+                const subtotal = (pricePerMonth / 30) * nights;
+                const tax = subtotal * config.taxRate;
+                const total = subtotal + tax;
+                
+                summaryContainer.innerHTML = `
+                    <div style="padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+                        <h4>Booking Summary</h4>
+                        <div style="display: flex; justify-content: space-between;"><span>${nights} night${nights > 1 ? 's' : ''}</span> <span>${formatCurrency(subtotal)}</span></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Taxes & Fees</span> <span>${formatCurrency(tax)}</span></div>
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; border-top: 1px solid #ddd; padding-top: 0.5rem; margin-top: 0.5rem;"><span>Total</span> <span>${formatCurrency(total)}</span></div>
+                    </div>
+                `;
+                log(`💰 Price calculated: ${nights} nights = ${formatCurrency(total)}`);
+            }
+        }
+
+        // Auto-start testing
+        document.addEventListener('DOMContentLoaded', async () => {
+            log('🚀 Starting booking system test...');
+            
+            // Test API first
+            const apiResult = await testAPI();
+            
+            // If API fails, use mock data
+            if (!apiResult) {
+                log('📋 API failed, falling back to mock data...');
+                await testMockData();
+            } else {
+                populateDropdown(apiResult);
+                setStatus('Connected to live Google Sheets data!', 'success');
+            }
+
+            // Set up event listeners
+            $('#apartmentType').addEventListener('change', updatePrice);
+            $('#checkIn').addEventListener('change', updatePrice);
+            $('#checkOut').addEventListener('change', updatePrice);
+            
+            log('✅ Test setup complete!');
+        });
+    </script>
+</body>
+</html>
