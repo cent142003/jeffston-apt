@@ -337,7 +337,7 @@
       this.setupBookingFormListeners();
     },
 
-    // Replace the populateDropdown method
+    // Enhanced populateDropdown method with fallback
     async populateDropdown() {
       const select = $('#apartmentType');
       if (!select) return;
@@ -345,19 +345,15 @@
       try {
         show($('#spinner-overlay'));
         
-        // Directly fetch apartment types from the API
-        const response = await fetch(`${config.apiUrl}?action=getApartments`);
-        const text = await response.text();
-        console.log('Raw apartments response:', text);
-        
-        const data = JSON.parse(text);
-        console.log('Parsed apartments data:', data);
+        // Use the same fetchFromScript function that has fallback logic
+        const data = await fetchFromScript('getApartments');
+        console.log('Apartments data received:', data);
 
         // Clear and add default option
         select.innerHTML = '<option value="">-- Select Apartment --</option>';
         
         // Add apartments to dropdown
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           data.forEach(apt => {
             const option = document.createElement('option');
             option.value = apt.id || apt.ID;
@@ -372,13 +368,31 @@
             select.value = preselectedId;
             this.updatePrice();
           }
+          
+          console.log(`Successfully loaded ${data.length} apartments into dropdown`);
         } else {
-          throw new Error('Invalid apartment data format');
+          throw new Error('No apartment data received');
         }
       } catch (error) {
         console.error('Error loading apartments:', error);
-        notify('Failed to load apartments. Please try again.', 'error');
-        select.innerHTML = '<option value="">Error loading apartments</option>';
+        
+        // Fallback: populate with mock data directly
+        console.log('Using fallback apartment data for dropdown');
+        const mockApartments = getMockApartments();
+        
+        select.innerHTML = '<option value="">-- Select Apartment --</option>';
+        mockApartments.forEach(apt => {
+          const option = document.createElement('option');
+          option.value = apt.id;
+          option.textContent = `${apt.type} - ${formatCurrency(apt.price)}`;
+          select.appendChild(option);
+        });
+        
+        // Show user-friendly message
+        if (!window.apartmentErrorShown) {
+          notify('📋 Using demo apartments. Update Google Apps Script for live data.', 'info', 6000);
+          window.apartmentErrorShown = true;
+        }
       } finally {
         hide($('#spinner-overlay'));
       }
@@ -393,12 +407,27 @@
 
     updatePrice() {
       const selectedId = $('#apartmentType')?.value;
-      const apartment = state.listings.find(apt => apt.ID === selectedId);
+      let apartment = state.listings.find(apt => apt.ID === selectedId);
+      
+      // If not found in listings, try to find in mock apartments
+      if (!apartment) {
+        const mockApartments = getMockApartments();
+        const mockApt = mockApartments.find(apt => apt.id === selectedId);
+        if (mockApt) {
+          apartment = {
+            ID: mockApt.id,
+            Title: mockApt.type,
+            Price_GHS: mockApt.price
+          };
+        }
+      }
+      
       const checkIn = new Date($('#checkIn')?.value);
       const checkOut = new Date($('#checkOut')?.value);
       const summaryContainer = $('.summary-content');
       if (!summaryContainer) return;
-      if (apartment && checkIn < checkOut) {
+      
+      if (apartment && checkIn && checkOut && checkIn < checkOut) {
         const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
         const pricePerMonth = apartment.Price_GHS;
         const subtotal = (pricePerMonth / 30) * nights;
