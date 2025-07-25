@@ -53,12 +53,53 @@
   };
 
   function notify(message, type = 'info', duration = 4000) {
+    // Remove any existing toasts to prevent stacking
+    document.querySelectorAll('.toast').forEach(toast => toast.remove());
+    
     const toast = document.createElement('div');
     toast.className = `toast toast--${type}`;
     toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
     toast.textContent = message;
+    
+    // Add toast styles if not already added
+    if (!document.querySelector('#toast-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'toast-styles';
+      styles.textContent = `
+        .toast {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #333;
+          color: white;
+          padding: 12px 20px;
+          border-radius: 6px;
+          z-index: 10000;
+          max-width: 400px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          animation: slideInRight 0.3s ease;
+        }
+        .toast--success { background: #16a34a; }
+        .toast--error { background: #dc2626; }
+        .toast--warn { background: #d97706; }
+        .toast--info { background: #2563eb; }
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @media (max-width: 768px) {
+          .toast { right: 10px; left: 10px; max-width: none; }
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+    
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), duration);
+    setTimeout(() => {
+      toast.style.animation = 'slideInRight 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
   }
 
   async function apiPost(action, payload) {
