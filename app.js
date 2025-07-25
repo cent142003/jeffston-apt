@@ -1,526 +1,599 @@
 /**
- * ========================================================================
- * JEFFSTON COURT: FINAL FRONTEND SCRIPT (app.js)
- * ========================================================================
- * This script manages the entire frontend application, including API calls,
- * multi-step form logic, real-time price calculation, dynamic UI updates,
- * filtering, pagination, and Paystack integration.
- * ========================================================================
+ * Jeffston Court Apartments - Booking System
+ * Professional booking application with Paystack integration
  */
-(() => {
-  'use strict';
 
-  // --- Configuration & State ---
-  // Update config with new URL
-  const config = {
-    apiUrl: 'https://script.google.com/macros/s/AKfycbxfAKrIYIeeMTWfvLrvBZbYaKbNXDYcIyBhHYmj-oj5KWHvEE0zlz-6vhOGyr-08D9W/exec',
-    paystackKey: 'pk_live_9302b8356f0551937a496101908e2eb772328962',
-    taxRate: 0.12,
-    listingsPerPage: 6,
-  };
+class BookingApp {
+  constructor() {
+    this.state = {
+      listings: [],
+      currentPage: 1,
+      isLoading: false,
+    };
 
-  const state = {
-    listings: [],
-    currentPage: 1,
-    get paginatedListings() {
-      const start = (this.currentPage - 1) * config.listingsPerPage;
-      const end = start + config.listingsPerPage;
-      return this.filteredListings.slice(start, end);
-    },
-    get filteredListings() {
-      const form = document.getElementById('filter-form');
-      if (!form) return this.listings;
-      const filters = new FormData(form);
-      const priceRange = filters.get('price-range');
-      const bedrooms = filters.get('bedrooms');
-      return this.listings.filter(listing => {
-        const priceMatch = !priceRange || checkPriceRange(listing.Price_GHS, priceRange);
-        const bedroomMatch = !bedrooms || bedrooms === 'any' || parseInt(listing.Bedrooms) >= parseInt(bedrooms);
-        return priceMatch && bedroomMatch && listing.Available?.toLowerCase() === 'yes';
-      });
-    },
-  };
+    this.selectors = {
+      spinnerOverlay: '#spinner-overlay',
+      bookingForm: '#booking-form',
+      apartmentSelect: '#apartmentType',
+      summaryContent: '.summary-content',
+      listingsContainer: '#listings-container',
+      filterForm: '#filter-form',
+      prevPageBtn: '#prev-page',
+      nextPageBtn: '#next-page',
+      pageInfo: '#page-info',
+    };
 
-  // --- Utility Functions ---
-  const $ = selector => document.querySelector(selector);
-  const show = el => el?.classList.remove('hidden');
-  const hide = el => el?.classList.add('hidden');
-  const formatCurrency = (amount, locale = 'en-GH', currency = 'GHS') =>
-    new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);
-  const checkPriceRange = (price, range) => {
-    const [min, max] = range.split('-').map(Number);
-    return price >= min && (max ? price <= max : true);
-  };
-
-  function notify(message, type = 'info', duration = 4000) {
-    const toast = document.createElement('div');
-    toast.className = `toast toast--${type}`;
-    toast.setAttribute('role', 'alert');
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), duration);
+    this.init();
   }
 
-  async function apiPost(action, payload) {
-    show($('#spinner-overlay'));
-    try {
-      const response = await fetch(`${config.apiUrl}?action=${action}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(`API Error: ${response.status} - ${errorData.message || 'Unknown error'}`);
-      }
-      return await response.json();
-    } catch (error) {
-      notify(`API ${action} failed: ${error.message}`, 'error');
-      throw error;
-    } finally {
-      hide($('#spinner-overlay'));
+  // Initialization
+  init() {
+    this.bindEvents();
+    this.loadPage();
+  }
+
+  bindEvents() {
+    document.addEventListener('DOMContentLoaded', () => {
+      this.setupWhatsAppLink();
+    });
+  }
+
+  loadPage() {
+    const currentPage = this.getCurrentPage();
+    
+    switch (currentPage) {
+      case 'listings':
+        this.initListingsPage();
+        break;
+      case 'booking':
+        this.initBookingPage();
+        break;
+      default:
+        this.initBookingPage();
     }
   }
 
-  // Updated fetchFromScript function with better error handling:
-  async function fetchFromScript(action) {
-    const url = `${config.apiUrl}?action=${action}`;
-    console.log('Fetching from:', url);
+  getCurrentPage() {
+    const path = window.location.pathname.split('/').pop();
     
+    if (path === 'listings.html') return 'listings';
+    if (path === 'index.html' || path === '') return 'booking';
+    
+    return 'booking';
+  }
+
+  // Utility Methods
+  $(selector) {
+    return document.querySelector(selector);
+  }
+
+  $$(selector) {
+    return document.querySelectorAll(selector);
+  }
+
+  show(element) {
+    if (element) element.classList.remove('hidden');
+  }
+
+  hide(element) {
+    if (element) element.classList.add('hidden');
+  }
+
+  log(message, data = null) {
+    if (CONFIG.dev.enableLogging) {
+      console.log(`[BookingApp] ${message}`, data);
+    }
+  }
+
+  formatCurrency(amount) {
+    return new Intl.NumberFormat('en-GH', {
+      style: 'currency',
+      currency: CONFIG.payment.currency,
+      minimumFractionDigits: 0,
+    }).format(amount);
+  }
+
+  // Notification System
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification--${type}`;
+    notification.setAttribute('role', 'alert');
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      notification.classList.add('notification--show');
+    });
+
+    // Remove after delay
+    setTimeout(() => {
+      notification.classList.remove('notification--show');
+      setTimeout(() => notification.remove(), 300);
+    }, CONFIG.app.notificationDuration);
+  }
+
+  // Loading State Management
+  setLoading(isLoading) {
+    this.state.isLoading = isLoading;
+    const spinner = this.$(this.selectors.spinnerOverlay);
+    
+    if (isLoading) {
+      this.show(spinner);
+    } else {
+      this.hide(spinner);
+    }
+  }
+
+  // API Communication
+  async apiRequest(action, data = null) {
+    const url = `${CONFIG.api.baseUrl}?action=${action}`;
+    this.log(`Making API request to: ${action}`, data);
+
     try {
-      const response = await fetch(url);
-      const text = await response.text();
-      console.log('Raw response length:', text.length);
-      console.log('Response starts with:', text.substring(0, 100));
-      
-      // Check if we got HTML instead of JSON
-      if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
-        console.warn('Got HTML response instead of JSON. The Google Apps Script doGet() function needs to handle action parameters.');
-        
-        // Show user-friendly notification about using demo data
-        if (!window.demoDataNotificationShown) {
-          notify('📋 Using demo data. To connect live data, update your Google Apps Script. See api-test.html for details.', 'info', 8000);
-          window.demoDataNotificationShown = true;
-        }
-        
-        // Return mock data for now
-        if (action === 'listings') {
-          return getMockListings();
-        } else if (action === 'getApartments') {
-          return getMockApartments();
-        } else {
-          throw new Error(`API returned HTML instead of JSON for action: ${action}`);
-        }
+      const options = {
+        method: data ? 'POST' : 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+
+      if (data) {
+        options.body = JSON.stringify(data);
       }
-      
-      const data = JSON.parse(text);
-      console.log('Parsed data:', data);
-      
-      // Show success notification when API is working properly
-      if (!window.liveDataNotificationShown && Array.isArray(data) && data.length > 0) {
-        notify('✅ Connected to live Google Sheets data!', 'success', 4000);
-        window.liveDataNotificationShown = true;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), CONFIG.api.timeout);
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+
+      const result = await response.json();
+      this.log(`API response for ${action}:`, result);
       
-      return data;
+      return result;
     } catch (error) {
-      console.error('Fetch error:', error);
+      this.log(`API error for ${action}:`, error);
+      
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - please try again');
+      }
       
       // Fallback to mock data for development
-      if (action === 'listings') {
-        console.log('Using mock listings data');
-        return getMockListings();
-      } else if (action === 'getApartments') {
-        console.log('Using mock apartments data');
-        return getMockApartments();
+      if (CONFIG.dev.useMockData) {
+        return this.getMockData(action);
       }
       
-      throw new Error(`Failed to fetch ${action}: ${error.message}`);
+      throw new Error(`Failed to ${action}: ${error.message}`);
     }
   }
 
-  // Mock data functions for development/fallback
-  function getMockListings() {
-    return [
-      {
-        ID: "APT001",
-        Title: "2-Bedroom Luxury Apartment",
-        Description: "Spacious apartment with modern amenities, high-speed internet, and 24/7 security.",
-        Price_GHS: 4200,
-        Image_URL: "Assets/photo_3_2025-07-25_06-12-23.jpg",
-        Available: "yes",
-        Bedrooms: 2
-      },
-      {
-        ID: "APT002", 
-        Title: "3-Bedroom Premium Apartment",
-        Description: "Premium apartment perfect for families with full kitchen and living areas.",
-        Price_GHS: 6840,
-        Image_URL: "Assets/photo_4_2025-07-25_06-12-23.jpg",
-        Available: "yes",
-        Bedrooms: 3
-      },
-      {
-        ID: "APT003",
-        Title: "Executive 1-Bedroom Suite", 
-        Description: "Perfect for business travelers with workspace and luxury amenities.",
-        Price_GHS: 3200,
-        Image_URL: "Assets/photo_5_2025-07-25_06-12-23.jpg",
-        Available: "yes",
-        Bedrooms: 1
-      }
-    ];
+  // Mock Data (Development Only)
+  getMockData(action) {
+    const mockData = {
+      listings: [
+        {
+          ID: 'APT001',
+          Title: '2-Bedroom Luxury Apartment',
+          Description: 'Spacious apartment with modern amenities, high-speed internet, and 24/7 security.',
+          Price_GHS: 4200,
+          Image_URL: 'Assets/photo_3_2025-07-25_06-12-23.jpg',
+          Available: 'yes',
+          Bedrooms: 2,
+        },
+        {
+          ID: 'APT002',
+          Title: '3-Bedroom Premium Apartment',
+          Description: 'Premium apartment perfect for families with full kitchen and living areas.',
+          Price_GHS: 6840,
+          Image_URL: 'Assets/photo_4_2025-07-25_06-12-23.jpg',
+          Available: 'yes',
+          Bedrooms: 3,
+        },
+        {
+          ID: 'APT003',
+          Title: 'Executive 1-Bedroom Suite',
+          Description: 'Perfect for business travelers with workspace and luxury amenities.',
+          Price_GHS: 3200,
+          Image_URL: 'Assets/photo_5_2025-07-25_06-12-23.jpg',
+          Available: 'yes',
+          Bedrooms: 1,
+        },
+      ],
+      getApartments: [
+        { id: 'APT001', type: '2-Bedroom Luxury Apartment', price: 4200 },
+        { id: 'APT002', type: '3-Bedroom Premium Apartment', price: 6840 },
+        { id: 'APT003', type: 'Executive 1-Bedroom Suite', price: 3200 },
+      ],
+    };
+
+    return mockData[action] || [];
   }
 
-  function getMockApartments() {
-    return [
-      {
-        id: "APT001",
-        type: "2-Bedroom Luxury Apartment",
-        price: 4200
-      },
-      {
-        id: "APT002",
-        type: "3-Bedroom Premium Apartment", 
-        price: 6840
-      },
-      {
-        id: "APT003",
-        type: "Executive 1-Bedroom Suite",
-        price: 3200
-      }
-    ];
-  }
-
-  async function postToScript(action, payload) {
-    show($('#spinner-overlay'));
+  // Listings Page
+  async initListingsPage() {
     try {
-      // Google Apps Script expects form-encoded data
-      const formData = new FormData();
-      formData.append('action', action);
-      Object.entries(payload).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-
-      const response = await fetch(config.apiUrl, {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.text();
-      if (data.includes('<!DOCTYPE html>')) {
-        throw new Error('API Error: Invalid response from server');
-      }
-      return JSON.parse(data);
+      this.setLoading(true);
+      await this.loadListings();
+      this.renderListings();
+      this.setupFilters();
+      this.setupPagination();
     } catch (error) {
-      notify(`Operation failed: ${error.message}`, 'error');
-      throw error;
+      this.showNotification('Failed to load listings', 'error');
     } finally {
-      hide($('#spinner-overlay'));
+      this.setLoading(false);
     }
   }
 
-  // --- Main Application Logic ---
-  const App = {
-    init() {
-      const path = window.location.pathname.split('/').pop();
-      if (path === 'listings.html' || path === '') {
-        this.initListingsPage();
-      } else if (path === 'index.html') {
-        this.initBookingPage();
-      }
-      this.setupGeneralListeners();
-    },
+  async loadListings() {
+    if (this.state.listings.length > 0) return;
+    
+    const data = await this.apiRequest('listings');
+    this.state.listings = Array.isArray(data) ? data : [];
+  }
 
-    setupGeneralListeners() {
-      const fab = $('.whatsapp-fab');
-      if (fab) {
-        fab.href = `https://wa.me/233201349321?text=${encodeURIComponent("Hello! I'm interested in an apartment.")}`;
-      }
-    },
+  renderListings() {
+    const container = this.$(this.selectors.listingsContainer);
+    if (!container) return;
 
-    async fetchListings() {
-      if (state.listings.length > 0) return state.listings;
-      show($('#spinner-overlay'));
-      try {
-        const data = await fetchFromScript('listings');
-        if (!Array.isArray(data)) {
-          throw new Error('Expected array of listings');
-        }
-        state.listings = data.map(item => ({
-          ID: item.id || item.ID || String(item.rowIndex),
-          Title: item.title || item.name || item.apartmentType,
-          Description: item.description || '',
-          Price_GHS: parseFloat(item.price) || 0,
-          Image_URL: item.imageUrl || 'Assets/photo_3_2025-07-25_06-12-23.jpg',
-          Available: String(item.available || 'yes').toLowerCase(),
-          Bedrooms: parseInt(item.bedrooms) || 1
-        }));
-        return state.listings;
-      } catch (error) {
-        notify('Failed to load listings: ' + error.message, 'error');
-        return [];
-      } finally {
-        hide($('#spinner-overlay'));
-      }
-    },
+    const listings = this.getFilteredListings();
+    const paginatedListings = this.getPaginatedListings(listings);
 
-    // --- Listings Page Logic ---
-    async initListingsPage() {
-      await this.fetchListings();
+    if (paginatedListings.length === 0) {
+      container.innerHTML = `
+        <div class="no-results">
+          <h3>No apartments match your criteria</h3>
+          <p>Try adjusting your filters or check back later for new listings.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = paginatedListings.map(listing => `
+      <a class="card-link" href="index.html?apt_id=${listing.ID}" aria-label="Book ${listing.Title}">
+        <article class="card">
+          <img src="${listing.Image_URL}" alt="${listing.Title}" loading="lazy">
+          <div class="card-content">
+            <h3>${listing.Title}</h3>
+            <p>${listing.Description}</p>
+            <span class="price">${this.formatCurrency(listing.Price_GHS)} / month</span>
+          </div>
+        </article>
+      </a>
+    `).join('');
+
+    this.updatePaginationUI(listings.length);
+  }
+
+  getFilteredListings() {
+    const form = this.$(this.selectors.filterForm);
+    if (!form) return this.state.listings;
+
+    const formData = new FormData(form);
+    const priceRange = formData.get('price-range');
+    const bedrooms = formData.get('bedrooms');
+
+    return this.state.listings.filter(listing => {
+      const priceMatch = !priceRange || this.checkPriceRange(listing.Price_GHS, priceRange);
+      const bedroomMatch = !bedrooms || bedrooms === 'any' || 
+        parseInt(listing.Bedrooms) >= parseInt(bedrooms);
+      const availableMatch = listing.Available?.toLowerCase() === 'yes';
+
+      return priceMatch && bedroomMatch && availableMatch;
+    });
+  }
+
+  checkPriceRange(price, range) {
+    const [min, max] = range.split('-').map(Number);
+    return price >= min && (max ? price <= max : true);
+  }
+
+  getPaginatedListings(listings) {
+    const start = (this.state.currentPage - 1) * CONFIG.app.listingsPerPage;
+    const end = start + CONFIG.app.listingsPerPage;
+    return listings.slice(start, end);
+  }
+
+  setupFilters() {
+    const form = this.$(this.selectors.filterForm);
+    if (!form) return;
+
+    form.addEventListener('input', () => {
+      this.state.currentPage = 1;
       this.renderListings();
-      this.setupFilterListeners();
-      this.setupPaginationListeners();
-      // Map is handled by embedded HTML
-    },
+    });
+  }
 
-    renderListings() {
-      const container = $('#listings-container');
-      const listingsToRender = state.paginatedListings;
-      if (!container) return;
-      if (listingsToRender.length === 0) {
-        container.innerHTML = '<p>No listings match your criteria.</p>';
-      } else {
-        const baseURL = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-        container.innerHTML = listingsToRender.map(listing => `
-          <a class="card-link" href="${baseURL}index.html?apt_id=${listing.ID}">
-            <article class="card" tabindex="0" aria-label="${listing.Title}">
-              <img src="${listing.Image_URL}" alt="${listing.Title}" loading="lazy">
-              <div class="card-content">
-                <h3>${listing.Title}</h3>
-                <p>${listing.Description}</p>
-                <p class="price">${formatCurrency(listing.Price_GHS)} / month</p>
-              </div>
-            </article>
-          </a>`).join('');
-      }
-      this.updatePagination();
-    },
+  setupPagination() {
+    const prevBtn = this.$(this.selectors.prevPageBtn);
+    const nextBtn = this.$(this.selectors.nextPageBtn);
 
-    setupFilterListeners() {
-      $('#filter-form')?.addEventListener('input', () => {
-        state.currentPage = 1;
+    prevBtn?.addEventListener('click', () => {
+      if (this.state.currentPage > 1) {
+        this.state.currentPage--;
         this.renderListings();
-      });
-    },
-
-    setupPaginationListeners() {
-      $('#prev-page')?.addEventListener('click', () => {
-        if (state.currentPage > 1) {
-          state.currentPage--;
-          this.renderListings();
-        }
-      });
-      $('#next-page')?.addEventListener('click', () => {
-        const totalPages = Math.ceil(state.filteredListings.length / config.listingsPerPage);
-        if (state.currentPage < totalPages) {
-          state.currentPage++;
-          this.renderListings();
-        }
-      });
-    },
-
-    updatePagination() {
-      const pageInfo = $('#page-info');
-      const prevBtn = $('#prev-page');
-      const nextBtn = $('#next-page');
-      const totalPages = Math.ceil(state.filteredListings.length / config.listingsPerPage);
-      if (pageInfo) pageInfo.textContent = `Page ${state.currentPage} of ${totalPages || 1}`;
-      if (prevBtn) prevBtn.disabled = state.currentPage === 1;
-      if (nextBtn) nextBtn.disabled = state.currentPage >= totalPages;
-    },
-
-    // --- Booking Page Logic ---
-    async initBookingPage() {
-      await this.fetchListings();
-      this.populateDropdown();
-      this.setupBookingFormListeners();
-    },
-
-    // Replace the populateDropdown method
-    async populateDropdown() {
-      const select = $('#apartmentType');
-      if (!select) return;
-
-      try {
-        show($('#spinner-overlay'));
-        
-        // Directly fetch apartment types from the API
-        const response = await fetch(`${config.apiUrl}?action=getApartments`);
-        const text = await response.text();
-        console.log('Raw apartments response:', text);
-        
-        const data = JSON.parse(text);
-        console.log('Parsed apartments data:', data);
-
-        // Clear and add default option
-        select.innerHTML = '<option value="">-- Select Apartment --</option>';
-        
-        // Add apartments to dropdown
-        if (Array.isArray(data)) {
-          data.forEach(apt => {
-            const option = document.createElement('option');
-            option.value = apt.id || apt.ID;
-            option.textContent = `${apt.type || apt.Title} - ${formatCurrency(Number(apt.price || apt.Price_GHS))}`;
-            select.appendChild(option);
-          });
-
-          // Handle preselected apartment from URL
-          const urlParams = new URLSearchParams(window.location.search);
-          const preselectedId = urlParams.get('apt_id');
-          if (preselectedId) {
-            select.value = preselectedId;
-            this.updatePrice();
-          }
-        } else {
-          throw new Error('Invalid apartment data format');
-        }
-      } catch (error) {
-        console.error('Error loading apartments:', error);
-        notify('Failed to load apartments. Please try again.', 'error');
-        select.innerHTML = '<option value="">Error loading apartments</option>';
-      } finally {
-        hide($('#spinner-overlay'));
       }
-    },
+    });
 
-    setupBookingFormListeners() {
-      const form = $('#booking-form');
-      if (!form) return;
-      form.addEventListener('input', () => this.updatePrice());
-      form.addEventListener('submit', (e) => this.handleBookingSubmit(e));
-    },
-
-    updatePrice() {
-      const selectedId = $('#apartmentType')?.value;
-      const apartment = state.listings.find(apt => apt.ID === selectedId);
-      const checkIn = new Date($('#checkIn')?.value);
-      const checkOut = new Date($('#checkOut')?.value);
-      const summaryContainer = $('.summary-content');
-      if (!summaryContainer) return;
-      if (apartment && checkIn < checkOut) {
-        const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-        const pricePerMonth = apartment.Price_GHS;
-        const subtotal = (pricePerMonth / 30) * nights;
-        const tax = subtotal * config.taxRate;
-        const total = subtotal + tax;
-        summaryContainer.innerHTML = `
-          <div class="price-row"><span>${nights} night${nights > 1 ? 's' : ''}</span> <span>${formatCurrency(subtotal)}</span></div>
-          <div class="price-row"><span>Taxes & Fees</span> <span>${formatCurrency(tax)}</span></div>
-          <div class="price-row total"><span>Total</span> <span>${formatCurrency(total)}</span></div>
-        `;
-      } else {
-        summaryContainer.innerHTML = '<p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>';
-      }
-    },
-
-    async handleBookingSubmit(event) {
-      event.preventDefault();
-      const form = $('#booking-form');
-      const submitBtn = $('#submit-booking');
+    nextBtn?.addEventListener('click', () => {
+      const filteredListings = this.getFilteredListings();
+      const totalPages = Math.ceil(filteredListings.length / CONFIG.app.listingsPerPage);
       
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
+      if (this.state.currentPage < totalPages) {
+        this.state.currentPage++;
+        this.renderListings();
       }
+    });
+  }
 
+  updatePaginationUI(totalItems) {
+    const pageInfo = this.$(this.selectors.pageInfo);
+    const prevBtn = this.$(this.selectors.prevPageBtn);
+    const nextBtn = this.$(this.selectors.nextPageBtn);
+    
+    const totalPages = Math.ceil(totalItems / CONFIG.app.listingsPerPage);
+    
+    if (pageInfo) {
+      pageInfo.textContent = `Page ${this.state.currentPage} of ${totalPages || 1}`;
+    }
+    
+    if (prevBtn) prevBtn.disabled = this.state.currentPage === 1;
+    if (nextBtn) nextBtn.disabled = this.state.currentPage >= totalPages;
+  }
+
+  // Booking Page
+  async initBookingPage() {
+    try {
+      this.setLoading(true);
+      await this.loadListings();
+      await this.populateApartmentDropdown();
+      this.setupBookingForm();
+      this.handlePreselectedApartment();
+    } catch (error) {
+      this.showNotification('Failed to initialize booking form', 'error');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async populateApartmentDropdown() {
+    const select = this.$(this.selectors.apartmentSelect);
+    if (!select) return;
+
+    try {
+      const apartments = await this.apiRequest('getApartments');
+      
+      select.innerHTML = '<option value="">-- Select Apartment --</option>';
+      
+      apartments.forEach(apt => {
+        const option = document.createElement('option');
+        option.value = apt.id || apt.ID;
+        option.textContent = `${apt.type || apt.Title} - ${this.formatCurrency(Number(apt.price || apt.Price_GHS))}`;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      this.showNotification('Failed to load apartment options', 'error');
+      select.innerHTML = '<option value="">Error loading apartments</option>';
+    }
+  }
+
+  handlePreselectedApartment() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const apartmentId = urlParams.get('apt_id');
+    
+    if (apartmentId) {
+      const select = this.$(this.selectors.apartmentSelect);
+      if (select) {
+        select.value = apartmentId;
+        this.updateBookingSummary();
+      }
+    }
+  }
+
+  setupBookingForm() {
+    const form = this.$(this.selectors.bookingForm);
+    if (!form) return;
+
+    form.addEventListener('input', () => this.updateBookingSummary());
+    form.addEventListener('submit', (e) => this.handleBookingSubmission(e));
+  }
+
+  updateBookingSummary() {
+    const apartmentId = this.$(this.selectors.apartmentSelect)?.value;
+    const checkIn = this.$('#checkIn')?.value;
+    const checkOut = this.$('#checkOut')?.value;
+    const summaryContainer = this.$(this.selectors.summaryContent);
+
+    if (!summaryContainer) return;
+
+    if (!apartmentId || !checkIn || !checkOut) {
+      summaryContainer.innerHTML = `
+        <p class="summary-placeholder">
+          Select an apartment and dates to see your booking summary.
+        </p>
+      `;
+      return;
+    }
+
+    const apartment = this.state.listings.find(apt => apt.ID === apartmentId);
+    if (!apartment) return;
+
+    const checkInDate = new Date(checkIn);
+    const checkOutDate = new Date(checkOut);
+    
+    if (checkOutDate <= checkInDate) {
+      summaryContainer.innerHTML = `
+        <p class="summary-error">Check-out date must be after check-in date.</p>
+      `;
+      return;
+    }
+
+    const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+    const dailyRate = apartment.Price_GHS / 30;
+    const subtotal = dailyRate * nights;
+    const tax = subtotal * CONFIG.payment.taxRate;
+    const total = subtotal + tax;
+
+    summaryContainer.innerHTML = `
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>${nights} night${nights > 1 ? 's' : ''}</span>
+          <span>${this.formatCurrency(subtotal)}</span>
+        </div>
+        <div class="price-row">
+          <span>Taxes & Fees</span>
+          <span>${this.formatCurrency(tax)}</span>
+        </div>
+        <div class="price-row price-row--total">
+          <span>Total</span>
+          <span>${this.formatCurrency(total)}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  async handleBookingSubmission(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    try {
       submitBtn.disabled = true;
-      show($('#spinner-overlay'));
+      this.setLoading(true);
 
-      try {
-        const formData = new FormData(form);
-        const bookingData = Object.fromEntries(formData.entries());
-        const selectedApartment = state.listings.find(apt => apt.ID === bookingData.apartmentType);
-        
-        if (!selectedApartment) {
-          throw new Error('Selected apartment not found');
-        }
-
-        // Calculate total amount
-        const checkIn = new Date(bookingData.checkIn);
-        const checkOut = new Date(bookingData.checkOut);
-        const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-        const amount = ((selectedApartment.Price_GHS / 30) * nights) * (1 + config.taxRate);
-
-        // Create unique booking reference
-        const bookingReference = `BK${Date.now()}`;
-
-        // Prepare booking payload
-        const payload = {
-          action: 'createBooking',
-          reference: bookingReference,
-          apartmentId: selectedApartment.ID,
-          apartmentTitle: selectedApartment.Title,
-          amount: amount,
-          ...bookingData
-        };
-
-        // Send booking to Google Sheet
-        const response = await fetchFromScript(`createBooking&${new URLSearchParams(payload)}`);
-        
-        if (response.success) {
-          // Trigger payment
-          this.triggerPaystack({
-            email: bookingData.email,
-            amount: amount,
-            bookingId: bookingReference
-          });
-        } else {
-          throw new Error(response.message || 'Booking failed');
-        }
-
-      } catch (error) {
-        notify(error.message, 'error');
-      } finally {
-        hide($('#spinner-overlay'));
-        submitBtn.disabled = false;
-      }
-    },
-
-    triggerPaystack(bookingDetails) {
-      console.log('Payment details:', bookingDetails); // Debug log
+      const bookingData = this.extractBookingData(form);
+      const bookingReference = this.generateBookingReference();
       
+      // Create booking record
+      await this.createBooking({
+        ...bookingData,
+        reference: bookingReference,
+      });
+
+      // Process payment
+      await this.processPayment({
+        email: bookingData.email,
+        amount: bookingData.totalAmount,
+        reference: bookingReference,
+      });
+
+    } catch (error) {
+      this.showNotification(error.message, 'error');
+    } finally {
+      this.setLoading(false);
+      submitBtn.disabled = false;
+    }
+  }
+
+  extractBookingData(form) {
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    const apartment = this.state.listings.find(apt => apt.ID === data.apartmentType);
+    if (!apartment) {
+      throw new Error('Selected apartment not found');
+    }
+
+    const checkIn = new Date(data.checkIn);
+    const checkOut = new Date(data.checkOut);
+    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+    
+    const subtotal = (apartment.Price_GHS / 30) * nights;
+    const tax = subtotal * CONFIG.payment.taxRate;
+    const totalAmount = subtotal + tax;
+
+    return {
+      ...data,
+      apartmentTitle: apartment.Title,
+      nights,
+      subtotal,
+      tax,
+      totalAmount,
+    };
+  }
+
+  generateBookingReference() {
+    return `BK${Date.now()}${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+  }
+
+  async createBooking(bookingData) {
+    try {
+      const response = await this.apiRequest('createBooking', bookingData);
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to create booking');
+      }
+      
+      return response;
+    } catch (error) {
+      throw new Error(`Booking creation failed: ${error.message}`);
+    }
+  }
+
+  async processPayment(paymentData) {
+    return new Promise((resolve, reject) => {
       const handler = PaystackPop.setup({
-        key: config.paystackKey,
-        email: bookingDetails.email,
-        amount: Math.round(bookingDetails.amount * 100), // Convert to pesewas
-        currency: 'GHS',
-        reference: bookingDetails.bookingId,
-        callback: (response) => {
-          console.log('Payment response:', response); // Debug log
-          notify('Payment successful! Verifying...', 'info');
-          postToScript('verifyPayment', { 
-            reference: response.reference,
-            bookingId: bookingDetails.bookingId
-          })
-          .then(() => {
-            notify('Booking Confirmed! Check your email.', 'success');
-            $('#booking-form').reset();
-          })
-          .catch(err => {
-            console.error('Verification error:', err);
-            notify('Payment verification failed. Please contact support.', 'error');
-          });
+        key: CONFIG.payment.paystackPublicKey,
+        email: paymentData.email,
+        amount: Math.round(paymentData.amount * 100), // Convert to pesewas
+        currency: CONFIG.payment.currency,
+        reference: paymentData.reference,
+        callback: async (response) => {
+          try {
+            await this.verifyPayment(response.reference);
+            this.showNotification('Booking confirmed! Check your email for details.', 'success');
+            this.resetBookingForm();
+            resolve(response);
+          } catch (error) {
+            this.showNotification('Payment verification failed. Please contact support.', 'error');
+            reject(error);
+          }
         },
         onClose: () => {
-          notify('Payment window closed.', 'warn');
-        }
+          reject(new Error('Payment cancelled by user'));
+        },
       });
 
       handler.openIframe();
+    });
+  }
+
+  async verifyPayment(reference) {
+    return this.apiRequest('verifyPayment', { reference });
+  }
+
+  resetBookingForm() {
+    const form = this.$(this.selectors.bookingForm);
+    if (form) {
+      form.reset();
+      this.updateBookingSummary();
     }
-  };
+  }
 
-  // --- Progressive Enhancement: DOMContentLoaded ---
-  document.addEventListener('DOMContentLoaded', () => {
-    App.init();
-  });
-})();
-
-// (Optional) Add this test snippet to verify listings data:
-if (window.location.search.includes('testAPI')) {
-  // Paste this code into your console or load a URL with ?testAPI for debugging.
-  fetchFromScript('listings')
-    .then(data => console.log('Test: Listings data fetched successfully:', data))
-    .catch(err => console.error('Test: Listings fetch error:', err));
+  // General Setup
+  setupWhatsAppLink() {
+    const whatsappBtn = this.$('.whatsapp-fab');
+    if (whatsappBtn) {
+      const message = encodeURIComponent(CONFIG.business.whatsappMessage);
+      whatsappBtn.href = `https://wa.me/${CONFIG.business.phone.replace('+', '')}?text=${message}`;
+    }
+  }
 }
+
+// Initialize the application
+new BookingApp();
