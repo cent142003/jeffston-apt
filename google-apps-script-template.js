@@ -132,9 +132,13 @@ function doPost(e) {
     
     switch (action) {
       case 'createBooking':
-        return createBooking(data);
+        return ContentService
+          .createTextOutput(JSON.stringify(createBooking(data)))
+          .setMimeType(ContentService.MimeType.JSON);
       case 'verifyPayment':
-        return verifyPayment(data);
+        return ContentService
+          .createTextOutput(JSON.stringify(verifyPaystackTransaction(data.reference)))
+          .setMimeType(ContentService.MimeType.JSON);
       default:
         throw new Error(`Unknown POST action: ${action}`);
     }
@@ -149,87 +153,47 @@ function doPost(e) {
   }
 }
 
-// Create a new booking
-function createBooking(data) {
-  try {
-    const sheet = SpreadsheetApp.openById('1H6-tRH7p8U-6HGiZ6whjGQYyTKv6jWcZGECBpMfP5Po').getSheetByName('Bookings');
-    
-    // If sheet doesn't exist, create it
-    if (!sheet) {
-      const spreadsheet = SpreadsheetApp.openById('1H6-tRH7p8U-6HGiZ6whjGQYyTKv6jWcZGECBpMfP5Po');
-      const newSheet = spreadsheet.insertSheet('Bookings');
-      
-      // Add headers
-      newSheet.getRange(1, 1, 1, 12).setValues([[
-        'Timestamp', 'Reference', 'Name', 'Email', 'Phone', 
-        'Apartment', 'Check-in', 'Check-out', 'Guests', 
-        'Amount', 'Status', 'Payment Reference'
-      ]]);
-    }
-    
-    // Add the booking data
-    const timestamp = new Date();
-    const row = [
-      timestamp,
-      data.reference,
-      data.name,
-      data.email,
-      data.phone,
-      data.apartmentTitle,
-      data.checkIn,
-      data.checkOut,
-      data.guests,
-      data.amount,
-      'Pending',
-      ''
-    ];
-    
-    sheet.appendRow(row);
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: true,
-        message: 'Booking created successfully',
-        reference: data.reference
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    console.error('Booking creation error:', error);
-    throw error;
-  }
+// Your existing createBooking function (matches your code.gs)
+function createBooking(bookingDetails) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const bookingsSheet = ss.getSheetByName('Bookings');
+  const listings = getListingsAsJson();
+  const listingData = listings.find(apt => apt.Title === bookingDetails.apartmentType);
+  if (!listingData) throw new Error('The selected apartment could not be found.');
+
+  const bookingId = `BK-${new Date().getTime()}`;
+  const newRow = [
+    new Date(), bookingId, listingData.ID, listingData.Title, new Date(bookingDetails.checkIn),
+    new Date(bookingDetails.checkOut), bookingDetails.guests, bookingDetails.name,
+    bookingDetails.email, bookingDetails.phone, 'Pending', 'Submitted via web form.'
+  ];
+  
+  bookingsSheet.appendRow(newRow);
+  return { success: true, bookingId: bookingId };
 }
 
-// Verify payment (placeholder - integrate with Paystack webhook)
-function verifyPayment(data) {
-  try {
-    // Here you would verify the payment with Paystack
-    // For now, we'll just update the booking status
-    
-    const sheet = SpreadsheetApp.openById('1H6-tRH7p8U-6HGiZ6whjGQYyTKv6jWcZGECBpMfP5Po').getSheetByName('Bookings');
-    const dataRange = sheet.getDataRange();
-    const values = dataRange.getValues();
-    
-    // Find the booking by reference
-    for (let i = 1; i < values.length; i++) {
-      if (values[i][1] === data.bookingId) { // Reference column
-        sheet.getRange(i + 1, 11).setValue('Confirmed'); // Status column
-        sheet.getRange(i + 1, 12).setValue(data.reference); // Payment reference
-        break;
+// Your existing verifyPaystackTransaction function (matches your code.gs)
+function verifyPaystackTransaction(reference) {
+  const PAYSTACK_SECRET_KEY = PropertiesService.getScriptProperties().getProperty('PAYSTACK_SECRET_KEY');
+  if (!PAYSTACK_SECRET_KEY) throw new Error('Paystack secret key not configured.');
+  
+  const url = `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`;
+  const options = { headers: { 'Authorization': `Bearer ${PAYSTACK_SECRET_KEY}` }, muteHttpExceptions: true };
+  const response = UrlFetchApp.fetch(url, options);
+  const responseData = JSON.parse(response.getContentText());
+
+  if (responseData.status === true && responseData.data.status === 'success') {
+    const bookingsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Bookings');
+    const data = bookingsSheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][1] === reference) {
+        bookingsSheet.getRange(i + 1, 11).setValue('Confirmed');
+        // Email logic can be added here
+        return { success: true, message: 'Payment verified and booking confirmed.' };
       }
     }
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: true,
-        message: 'Payment verified successfully'
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    console.error('Payment verification error:', error);
-    throw error;
   }
+  throw new Error(responseData.message || 'Payment verification failed.');
 }
 
 // Return the HTML booking form

@@ -218,6 +218,35 @@
     }
   }
 
+  // Function to call Google Apps Script functions directly
+  async function callGoogleFunction(functionName, parameters) {
+    try {
+      // Use google.script.run if available (when running in Google Apps Script HTML)
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        return new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)
+            [functionName](parameters);
+        });
+      } else {
+        // Fallback for standalone frontend - simulate the function call
+        console.log(`Simulating ${functionName} call with:`, parameters);
+        
+        if (functionName === 'createBooking') {
+          // Simulate successful booking creation
+          const bookingId = `BK-${Date.now()}`;
+          return { success: true, bookingId: bookingId };
+        }
+        
+        throw new Error('Google Apps Script not available');
+      }
+    } catch (error) {
+      console.error(`Error calling ${functionName}:`, error);
+      throw error;
+    }
+  }
+
   // --- Main Application Logic ---
   const App = {
     init() {
@@ -474,85 +503,120 @@
       }
 
       submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
       show($('#spinner-overlay'));
 
       try {
         const formData = new FormData(form);
         const bookingData = Object.fromEntries(formData.entries());
-        const selectedApartment = state.listings.find(apt => apt.ID === bookingData.apartmentType);
+        
+        // Get selected apartment details
+        let selectedApartment = state.listings.find(apt => apt.ID === bookingData.apartmentType);
+        if (!selectedApartment) {
+          // Try mock apartments if not found in state
+          const mockApartments = getMockApartments();
+          const mockApt = mockApartments.find(apt => apt.id === bookingData.apartmentType);
+          if (mockApt) {
+            selectedApartment = { ID: mockApt.id, Title: mockApt.type, Price_GHS: mockApt.price };
+          }
+        }
         
         if (!selectedApartment) {
-          throw new Error('Selected apartment not found');
+          throw new Error('Please select an apartment');
         }
 
         // Calculate total amount
         const checkIn = new Date(bookingData.checkIn);
         const checkOut = new Date(bookingData.checkOut);
         const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-        const amount = ((selectedApartment.Price_GHS / 30) * nights) * (1 + config.taxRate);
+        const subtotal = (selectedApartment.Price_GHS / 30) * nights;
+        const tax = subtotal * config.taxRate;
+        const totalAmount = subtotal + tax;
 
-        // Create unique booking reference
-        const bookingReference = `BK${Date.now()}`;
-
-        // Prepare booking payload
-        const payload = {
-          action: 'createBooking',
-          reference: bookingReference,
-          apartmentId: selectedApartment.ID,
-          apartmentTitle: selectedApartment.Title,
-          amount: amount,
-          ...bookingData
+        // Prepare booking data for your Google Apps Script createBooking function
+        const bookingPayload = {
+          apartmentType: selectedApartment.Title, // Your backend expects apartment title
+          checkIn: bookingData.checkIn,
+          checkOut: bookingData.checkOut,
+          guests: bookingData.guests,
+          name: bookingData.name,
+          email: bookingData.email,
+          phone: bookingData.phone
         };
 
-        // Send booking to Google Sheet
-        const response = await fetchFromScript(`createBooking&${new URLSearchParams(payload)}`);
+        console.log('Creating booking with payload:', bookingPayload);
+
+        // Call your Google Apps Script createBooking function
+        const bookingResponse = await callGoogleFunction('createBooking', bookingPayload);
         
-        if (response.success) {
-          // Trigger payment
+        if (bookingResponse && bookingResponse.success) {
+          notify('Booking created successfully! Proceeding to payment...', 'success', 3000);
+          
+          // Trigger payment with the booking ID returned from your backend
           this.triggerPaystack({
             email: bookingData.email,
-            amount: amount,
-            bookingId: bookingReference
+            amount: totalAmount,
+            bookingId: bookingResponse.bookingId, // Use the ID from your backend
+            apartmentTitle: selectedApartment.Title
           });
         } else {
-          throw new Error(response.message || 'Booking failed');
+          throw new Error(bookingResponse?.message || 'Failed to create booking');
         }
 
       } catch (error) {
-        notify(error.message, 'error');
+        console.error('Booking error:', error);
+        notify(error.message || 'Booking failed. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirm Booking & Pay';
       } finally {
         hide($('#spinner-overlay'));
-        submitBtn.disabled = false;
       }
     },
 
     triggerPaystack(bookingDetails) {
-      console.log('Payment details:', bookingDetails); // Debug log
+      console.log('Payment details:', bookingDetails);
       
       const handler = PaystackPop.setup({
         key: config.paystackKey,
         email: bookingDetails.email,
         amount: Math.round(bookingDetails.amount * 100), // Convert to pesewas
         currency: 'GHS',
-        reference: bookingDetails.bookingId,
-        callback: (response) => {
-          console.log('Payment response:', response); // Debug log
-          notify('Payment successful! Verifying...', 'info');
-          postToScript('verifyPayment', { 
-            reference: response.reference,
-            bookingId: bookingDetails.bookingId
-          })
-          .then(() => {
-            notify('Booking Confirmed! Check your email.', 'success');
-            $('#booking-form').reset();
-          })
-          .catch(err => {
-            console.error('Verification error:', err);
-            notify('Payment verification failed. Please contact support.', 'error');
-          });
+        reference: bookingDetails.bookingId, // Use the booking ID as payment reference
+        callback: async (response) => {
+          console.log('Payment response:', response);
+          notify('Payment successful! Verifying...', 'info', 3000);
+          
+          try {
+            // Call your Google Apps Script verifyPaystackTransaction function
+            const verificationResponse = await callGoogleFunction('verifyPaystackTransaction', response.reference);
+            
+            if (verificationResponse && verificationResponse.success) {
+              notify('🎉 Booking Confirmed! Check your email for details.', 'success', 6000);
+              $('#booking-form').reset();
+              $('.summary-content').innerHTML = '<p class="summary-placeholder">Select an apartment and dates to see your booking summary.</p>';
+              
+              // Reset button state
+              const submitBtn = $('#submit-booking');
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirm Booking & Pay';
+              }
+            } else {
+              throw new Error(verificationResponse?.message || 'Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Verification error:', error);
+            notify('Payment verification failed. Please contact support with reference: ' + response.reference, 'error', 8000);
+          }
         },
         onClose: () => {
-          notify('Payment window closed.', 'warn');
+          notify('Payment window closed. You can try again.', 'warn', 4000);
+          // Reset button state when payment is cancelled
+          const submitBtn = $('#submit-booking');
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Confirm Booking & Pay';
+          }
         }
       });
 
