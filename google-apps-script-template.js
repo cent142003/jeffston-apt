@@ -244,28 +244,35 @@ function getBookingFormHtml() {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Book Your Stay</title>
+  <title>Book Your Stay - Jeffston Court</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: center; }
-    .container { max-width: 600px; width: 100%; background: #fff; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #333; }
-    .form-group { margin-bottom: 1.25rem; }
-    label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #555; }
-    input, select { width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-    button { width: 100%; padding: 0.8rem; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
-    button:disabled { background-color: #9ddcb1; cursor: not-allowed; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0; padding: 2rem; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .container { max-width: 600px; width: 100%; background: #fff; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #2c3e50; margin-bottom: 0.5rem; font-size: 2rem; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+    input, select { width: 100%; padding: 0.875rem; border: 2px solid #e1e8ed; border-radius: 8px; box-sizing: border-box; font-size: 1rem; transition: border-color 0.3s; }
+    input:focus, select:focus { outline: none; border-color: #16a34a; }
+    button { width: 100%; padding: 1rem; background: linear-gradient(135deg, #16a34a, #15803d); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3); }
+    button:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
     #booking-message { text-align: center; margin-top: 1rem; font-weight: bold; min-height: 24px; }
+    .logo { text-align: center; margin-bottom: 1rem; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Book Your Stay</h1>
+    <div class="logo">
+      <h1>🏡 Jeffston Court</h1>
+      <p class="subtitle">Luxury Apartments in Accra</p>
+    </div>
     <form id="booking-form" novalidate>
       <div class="form-group">
         <label for="apartmentType">Select Apartment</label>
         <select id="apartmentType" name="apartmentType" required>
-          <option value="">-- Please choose an option --</option>
+          <option value="">-- Choose your perfect home --</option>
           ${optionsHtml}
         </select>
       </div>

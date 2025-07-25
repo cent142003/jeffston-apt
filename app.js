@@ -139,35 +139,38 @@
     }
   }
 
-  // Mock data functions for development/fallback
+  // Mock data functions for development/fallback - Updated with 2 apartments and proper images
   function getMockListings() {
     return [
       {
         ID: "APT001",
         Title: "2-Bedroom Luxury Apartment",
-        Description: "Spacious apartment with modern amenities, high-speed internet, and 24/7 security.",
+        Description: "Spacious modern apartment with premium finishes, high-speed internet, 24/7 security, and elegant living spaces perfect for professionals or small families.",
         Price_GHS: 4200,
         Image_URL: "Assets/photo_3_2025-07-25_06-12-23.jpg",
+        Gallery_Images: [
+          "Assets/photo_3_2025-07-25_06-12-23.jpg",
+          "Assets/photo_4_2025-07-25_06-12-23.jpg", 
+          "Assets/photo_8_2025-07-25_06-12-23.jpg",
+          "Assets/photo_9_2025-07-25_06-12-23.jpg"
+        ],
         Available: "yes",
         Bedrooms: 2
       },
       {
         ID: "APT002", 
         Title: "3-Bedroom Premium Apartment",
-        Description: "Premium apartment perfect for families with full kitchen and living areas.",
+        Description: "Luxurious family apartment with spacious rooms, modern kitchen, premium appliances, and beautiful views. Perfect for families or groups seeking comfort and style.",
         Price_GHS: 6840,
-        Image_URL: "Assets/photo_4_2025-07-25_06-12-23.jpg",
+        Image_URL: "Assets/photo_5_2025-07-25_06-12-23.jpg",
+        Gallery_Images: [
+          "Assets/photo_5_2025-07-25_06-12-23.jpg",
+          "Assets/photo_7_2025-07-25_06-12-23.jpg",
+          "Assets/photo_1_2025-07-25_06-12-23.jpg",
+          "Assets/photo_2_2025-07-25_06-12-23.jpg"
+        ],
         Available: "yes",
         Bedrooms: 3
-      },
-      {
-        ID: "APT003",
-        Title: "Executive 1-Bedroom Suite", 
-        Description: "Perfect for business travelers with workspace and luxury amenities.",
-        Price_GHS: 3200,
-        Image_URL: "Assets/photo_5_2025-07-25_06-12-23.jpg",
-        Available: "yes",
-        Bedrooms: 1
       }
     ];
   }
@@ -183,11 +186,6 @@
         id: "APT002",
         type: "3-Bedroom Premium Apartment", 
         price: 6840
-      },
-      {
-        id: "APT003",
-        type: "Executive 1-Bedroom Suite",
-        price: 3200
       }
     ];
   }
@@ -278,18 +276,40 @@
       const container = $('#listings-container');
       const listingsToRender = state.paginatedListings;
       if (!container) return;
+      
       if (listingsToRender.length === 0) {
-        container.innerHTML = '<p>No listings match your criteria.</p>';
+        container.innerHTML = '<div style="text-align:center;padding:2rem;color:#666;"><p>No listings match your criteria.</p></div>';
       } else {
         const baseURL = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
         container.innerHTML = listingsToRender.map(listing => `
-          <a class="card-link" href="${baseURL}index.html?apt_id=${listing.ID}">
-            <article class="card" tabindex="0" aria-label="${listing.Title}">
-              <img src="${listing.Image_URL}" alt="${listing.Title}" loading="lazy">
-              <div class="card-content">
-                <h3>${listing.Title}</h3>
-                <p>${listing.Description}</p>
-                <p class="price">${formatCurrency(listing.Price_GHS)} / month</p>
+          <a class="card-link" href="${baseURL}index.html?apt_id=${listing.ID}" style="text-decoration:none;color:inherit;">
+            <article class="apartment-card" style="background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:all 0.3s ease;cursor:pointer;max-width:400px;margin:0 auto;" 
+                     onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,0.15)'" 
+                     onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'"
+                     tabindex="0" aria-label="${listing.Title}">
+              <div class="apartment-image" style="position:relative;overflow:hidden;height:240px;">
+                <img src="${listing.Image_URL}" 
+                     alt="${listing.Title}" 
+                     loading="lazy"
+                     style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;"
+                     onmouseover="this.style.transform='scale(1.05)'"
+                     onmouseout="this.style.transform='scale(1)'">
+                <div style="position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold;">
+                  ${listing.Bedrooms} Bed${listing.Bedrooms > 1 ? 's' : ''}
+                </div>
+              </div>
+              <div class="apartment-details" style="padding:1.5rem;">
+                <h3 style="margin:0 0 8px 0;font-size:1.25rem;color:#2c3e50;font-weight:600;">${listing.Title}</h3>
+                <p style="margin:0 0 12px 0;color:#666;font-size:0.9rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${listing.Description}</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+                  <span class="price" style="font-size:1.25rem;font-weight:bold;color:#16a34a;">${formatCurrency(listing.Price_GHS)}</span>
+                  <span style="font-size:0.85rem;color:#888;">per month</span>
+                </div>
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid #eee;">
+                  <span style="display:inline-block;background:#16a34a;color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;font-weight:500;">
+                    ✓ Available Now
+                  </span>
+                </div>
               </div>
             </article>
           </a>`).join('');

@@ -38,7 +38,7 @@
     <header class="nav-header" role="banner">
         <nav class="nav-container" aria-label="Main navigation">
             <a href="listings.html" class="nav-brand" aria-label="Jeffston Court Home">
-                <img src="Assets/photo_6_2025-07-25_06-12-23.jpg" alt="Jeffston Furnished Apartments Logo" width="56" height="56" style="border-radius:50%;object-fit:cover;">
+                <img src="Assets/photo_6_2025-07-25_06-12-23.jpg" alt="Jeffston Furnished Apartments Logo" width="56" height="56" style="border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
             </a>
             <div class="nav-links" role="navigation">
                 <a href="listings.html" class="active" aria-current="page">View Listings</a>
@@ -47,7 +47,15 @@
         </nav>
     </header>
 
-    <main id="main-content" class="container" role="main" style="background:var(--background-card);border-radius:var(--border-radius-lg);box-shadow:var(--box-shadow);padding:2.5rem;margin-top:2rem;">
+    <!-- Hero Section with Backdrop -->
+    <section class="hero-section" style="background:linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('Assets/photo_1_2025-07-25_06-12-23.jpg') center/cover;height:300px;display:flex;align-items:center;justify-content:center;color:white;text-align:center;">
+        <div style="max-width:600px;padding:2rem;">
+            <h1 style="font-size:2.5rem;margin-bottom:1rem;text-shadow:2px 2px 4px rgba(0,0,0,0.7);">Luxury Apartments in Accra</h1>
+            <p style="font-size:1.2rem;text-shadow:1px 1px 2px rgba(0,0,0,0.7);">Discover your perfect home with modern amenities and premium locations</p>
+        </div>
+    </section>
+
+    <main id="main-content" class="container" role="main" style="background:var(--background-card);border-radius:var(--border-radius-lg);box-shadow:var(--box-shadow);padding:2.5rem;margin-top:-50px;position:relative;z-index:2;">
         <div class="header-content" style="margin-bottom:2rem;">
             <h1 style="margin-bottom:0.5rem;">Our Apartments</h1>
             <p style="margin-bottom:2rem;">Find your next home at Jeffston Court. All prices are per month.</p>
@@ -60,43 +68,27 @@
                     <label for="filter-price">Price Range</label>
                     <select id="filter-price" name="price-range">
                         <option value="">All Prices</option>
-                        <option value="0-5000">Up to GHS 5000</option>
-                        <option value="5001-8000">GHS 5001 - 8000</option>
-                        <option value="8001">GHS 8001+</option>
+                        <option value="0-5000">Up to GHS 5,000</option>
+                        <option value="5001-7000">GHS 5,001 - 7,000</option>
+                        <option value="7001">Above GHS 7,000</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-bedrooms">Bedrooms</label>
                     <select id="filter-bedrooms" name="bedrooms">
                         <option value="">Any</option>
-                        <option value="1">1 Bedroom</option>
-                        <option value="2">2+ Bedrooms</option>
-                        <option value="3">3+ Bedrooms</option>
+                        <option value="2">2 Bedrooms</option>
+                        <option value="3">3 Bedrooms</option>
                     </select>
                 </div>
             </form>
         </section>
 
         <div id="listings-container" class="listings-grid" role="region" aria-live="polite" aria-atomic="true" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2rem;justify-items:center;">
-            <article class="apartment-card">
-  <div class="apartment-image">
-    <img src="Assets/photo_3_2025-07-25_06-12-23.jpg" alt="Luxury 2 Bedroom Apartment - Living Room" width="320" height="200">
-  </div>
-  <!-- ...details... -->
-</article>
-<article class="apartment-card">
-  <div class="apartment-image">
-    <img src="Assets/photo_4_2025-07-25_06-12-23.jpg" alt="Executive 1 Bedroom Suite - Bedroom" width="320" height="200">
-  </div>
-  <!-- ...details... -->
-</article>
-<article class="apartment-card">
-  <div class="apartment-image">
-    <img src="Assets/photo_5_2025-07-25_06-12-23.jpg" alt="Modern Kitchen in Jeffston Furnished Apartments" width="320" height="200">
-  </div>
-  <!-- ...details... -->
-</article>
-<!-- Continue for other apartments, using photo_6, photo_7, etc. -->
+            <!-- Apartment listings will be dynamically populated here by app.js -->
+            <div style="text-align:center;padding:2rem;color:#666;">
+                <p>Loading apartments...</p>
+            </div>
         </div>
 
         <div class="pagination" role="navigation" aria-label="Pagination" style="display:flex;justify-content:center;align-items:center;margin-top:2rem;">
