@@ -97,6 +97,12 @@
       if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
         console.warn('Got HTML response instead of JSON. The Google Apps Script doGet() function needs to handle action parameters.');
         
+        // Show user-friendly notification about using demo data
+        if (!window.demoDataNotificationShown) {
+          notify('📋 Using demo data. To connect live data, update your Google Apps Script. See api-test.html for details.', 'info', 8000);
+          window.demoDataNotificationShown = true;
+        }
+        
         // Return mock data for now
         if (action === 'listings') {
           return getMockListings();
@@ -109,6 +115,13 @@
       
       const data = JSON.parse(text);
       console.log('Parsed data:', data);
+      
+      // Show success notification when API is working properly
+      if (!window.liveDataNotificationShown && Array.isArray(data) && data.length > 0) {
+        notify('✅ Connected to live Google Sheets data!', 'success', 4000);
+        window.liveDataNotificationShown = true;
+      }
+      
       return data;
     } catch (error) {
       console.error('Fetch error:', error);
