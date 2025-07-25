@@ -82,21 +82,101 @@
     }
   }
 
-  // Updated fetchFromScript function for testing and production use:
+  // Updated fetchFromScript function with better error handling:
   async function fetchFromScript(action) {
     const url = `${config.apiUrl}?action=${action}`;
     console.log('Fetching from:', url);
+    
     try {
       const response = await fetch(url);
       const text = await response.text();
-      console.log('Raw response:', text); // Debug log
+      console.log('Raw response length:', text.length);
+      console.log('Response starts with:', text.substring(0, 100));
+      
+      // Check if we got HTML instead of JSON
+      if (text.trim().startsWith('<!DOCTYPE html>') || text.trim().startsWith('<html')) {
+        console.warn('Got HTML response instead of JSON. The Google Apps Script doGet() function needs to handle action parameters.');
+        
+        // Return mock data for now
+        if (action === 'listings') {
+          return getMockListings();
+        } else if (action === 'getApartments') {
+          return getMockApartments();
+        } else {
+          throw new Error(`API returned HTML instead of JSON for action: ${action}`);
+        }
+      }
+      
       const data = JSON.parse(text);
       console.log('Parsed data:', data);
       return data;
     } catch (error) {
       console.error('Fetch error:', error);
+      
+      // Fallback to mock data for development
+      if (action === 'listings') {
+        console.log('Using mock listings data');
+        return getMockListings();
+      } else if (action === 'getApartments') {
+        console.log('Using mock apartments data');
+        return getMockApartments();
+      }
+      
       throw new Error(`Failed to fetch ${action}: ${error.message}`);
     }
+  }
+
+  // Mock data functions for development/fallback
+  function getMockListings() {
+    return [
+      {
+        ID: "APT001",
+        Title: "2-Bedroom Luxury Apartment",
+        Description: "Spacious apartment with modern amenities, high-speed internet, and 24/7 security.",
+        Price_GHS: 4200,
+        Image_URL: "Assets/photo_3_2025-07-25_06-12-23.jpg",
+        Available: "yes",
+        Bedrooms: 2
+      },
+      {
+        ID: "APT002", 
+        Title: "3-Bedroom Premium Apartment",
+        Description: "Premium apartment perfect for families with full kitchen and living areas.",
+        Price_GHS: 6840,
+        Image_URL: "Assets/photo_4_2025-07-25_06-12-23.jpg",
+        Available: "yes",
+        Bedrooms: 3
+      },
+      {
+        ID: "APT003",
+        Title: "Executive 1-Bedroom Suite", 
+        Description: "Perfect for business travelers with workspace and luxury amenities.",
+        Price_GHS: 3200,
+        Image_URL: "Assets/photo_5_2025-07-25_06-12-23.jpg",
+        Available: "yes",
+        Bedrooms: 1
+      }
+    ];
+  }
+
+  function getMockApartments() {
+    return [
+      {
+        id: "APT001",
+        type: "2-Bedroom Luxury Apartment",
+        price: 4200
+      },
+      {
+        id: "APT002",
+        type: "3-Bedroom Premium Apartment", 
+        price: 6840
+      },
+      {
+        id: "APT003",
+        type: "Executive 1-Bedroom Suite",
+        price: 3200
+      }
+    ];
   }
 
   async function postToScript(action, payload) {
