@@ -68,11 +68,13 @@ function getListingsAsJson() {
       listing[header] = row[index];
     });
     
-    // Ensure consistent data format
+    // Ensure consistent data format - match your Google Sheets column names exactly
     listing.ID = listing.ID || listing.id || `APT${String(i).padStart(3, '0')}`;
-    listing.Price_GHS = Number(listing.Price_GHS || listing.price || 0);
-    listing.Available = String(listing.Available || 'yes').toLowerCase();
+    listing.Title = listing.Title || listing['Apartment Type'] || listing.Name || listing.title;
+    listing.Price_GHS = Number(listing.Price_GHS || listing.Price || listing.price || 0);
+    listing.Available = String(listing.Available || listing.Status || 'yes').toLowerCase();
     listing.Bedrooms = Number(listing.Bedrooms || listing.bedrooms || 1);
+    listing.Description = listing.Description || listing.description || '';
     
     listings.push(listing);
   }
@@ -88,8 +90,8 @@ function getAvailableApartmentTitles() {
     .filter(listing => listing.Available === 'yes')
     .map(listing => ({
       id: listing.ID,
-      type: listing.Title || listing.name || listing.apartmentType,
-      price: listing.Price_GHS
+      type: listing.Title || listing.Name || listing.apartmentType || listing['Apartment Type'],
+      price: listing.Price_GHS || listing.Price || listing['Price_GHS']
     }));
 }
 

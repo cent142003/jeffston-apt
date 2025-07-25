@@ -139,7 +139,7 @@
     }
   }
 
-  // Mock data functions for development/fallback - Updated with 2 apartments and proper images
+  // Mock data functions for development/fallback - EXACT MATCH with Google Sheets
   function getMockListings() {
     return [
       {
