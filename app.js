@@ -432,9 +432,50 @@
 
     // --- Booking Page Logic ---
     async initBookingPage() {
-      await this.fetchListings();
-      this.populateDropdown();
-      this.setupBookingFormListeners();
+      this.attachBookingButtonListeners();
+    },
+
+    attachBookingButtonListeners() {
+      const popupBtn = $('#popup-booking');
+      const redirectBtn = $('#redirect-booking');
+
+      if (popupBtn) {
+        popupBtn.addEventListener('click', () => {
+          this.openBookingPopup();
+        });
+      }
+
+      if (redirectBtn) {
+        redirectBtn.addEventListener('click', () => {
+          this.redirectToBooking();
+        });
+      }
+    },
+
+    openBookingPopup() {
+      const bookingUrl = config.apiUrl; // Your Google Apps Script URL
+      const popupWidth = 800;
+      const popupHeight = 600;
+      const left = (window.screen.width - popupWidth) / 2;
+      const top = (window.screen.height - popupHeight) / 2;
+
+      const popup = window.open(
+        bookingUrl,
+        'jeffston-booking',
+        `width=${popupWidth},height=${popupHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+      );
+
+      if (popup) {
+        notify('Booking form opened in popup window. Complete your booking there.', 'info', 5000);
+        popup.focus();
+      } else {
+        notify('Popup blocked! Please allow popups or use the "Open Booking Page" option.', 'warn', 6000);
+      }
+    },
+
+    redirectToBooking() {
+      notify('Redirecting to secure booking form...', 'info', 2000);
+      window.open(config.apiUrl, '_blank');
     },
 
     // Enhanced populateDropdown method with fallback
