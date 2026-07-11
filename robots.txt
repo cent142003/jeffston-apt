@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cent142003.github.io/jeffston-apt/sitemap.xml
