@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "https://jeffston-court-apartments.cent142003.chatgpt.site/$1"
+    }
+  ]
+}
