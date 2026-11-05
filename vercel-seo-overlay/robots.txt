@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jeffston-court-apartments.vercel.app/sitemap.xml
+Sitemap: https://jeffston-court-apartments.vercel.app/sitemap-seo.xml
